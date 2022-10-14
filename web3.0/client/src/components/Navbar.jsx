@@ -1,6 +1,7 @@
 import { HiMenuAlt4 } from 'react-icons/hi';
 import { AiOutlineClose } from 'react-icons/ai';
-import { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { MarketTrackerContext } from '../context/MarketTrackerContext';
 
 const NavbarItem = ({title, classProps}) => {
     return (
@@ -10,7 +11,7 @@ const NavbarItem = ({title, classProps}) => {
     );
 }
 const Navbar = ({setScreenState}) => {
-
+    const {connectWallet, currentAccount, currentBalance} = useContext(MarketTrackerContext);
     const viewHome = () => {
         setScreenState("Welcome");
     }
@@ -29,7 +30,16 @@ const Navbar = ({setScreenState}) => {
                     <NavbarItem key={item + index} title={item} />
                 ))} */}
             </ul>
-            <button className="bg-blue-700 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg ">Login with Metamask</button>
+            {
+                !currentAccount && (
+                    <button className="bg-blue-700 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={connectWallet}>Login with Metamask</button>
+                )
+            }
+            {
+                currentAccount && (
+                    <button className="bg-blue-700 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button">{currentBalance} ETH</button>
+                )
+            }
             <div className="flex relative pr-10">
                     {toggleMenu
                     // this doesn't work yet

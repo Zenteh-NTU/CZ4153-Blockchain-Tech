@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import React, { useState, useContext } from 'react';
 const Welcome = ({setScreenState}) => {
+
     const viewMarket = () => {
         setScreenState("Market");
     }
