@@ -22,7 +22,7 @@ const Navbar = ({setScreenState}) => {
     return (
         <nav className="fixed w-full flex md:justify-center justify-between items-center h-16 bg-gradient-to-r from-blue-700 to-pink-900">
             <div className="cursor-pointer md:flex-[0.5] pl-10 md:pl-0 flex-initial justify-start items-center font-mono text-white text-2xl" onClick={viewHome}>
-            To the moon
+            To the moon &#127769; &#128640;
             </div>
             <ul className="text-white md:flex hidden list-none flex-row justify-end items-center flex-initial">
                 <li className="mx-4 cursor-pointer" onClick={viewMarket}>Market</li>
