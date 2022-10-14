@@ -1,10 +1,17 @@
+import React, { useState, useContext } from 'react';
+import { MarketTrackerContext } from '../context/MarketTrackerContext';
 const Market = () => {
+    const {currentAccount} = useContext(MarketTrackerContext);
     return (
         <div className="w-full flex justify-center h-screen bg-gradient-to-r from-blue-900 to-pink-900">
             <div className="pr-0 pt-32 lg:pr-96 ">
                 <h1 className="text-4xl text-white sm:text-5xl">Markets Available</h1>
                 <p className=" font-mono pt-3 text-white">Here lists the many prediction markets available <br></br> Start a market or start predicting!</p>
-                <button className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Create new market</button>
+                {
+                    currentAccount && (
+                        <button className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Create new market</button>
+                    )
+                }
 
 
                 <div className=" mt-6 w-full bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg">

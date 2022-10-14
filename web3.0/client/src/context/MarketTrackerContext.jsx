@@ -19,6 +19,11 @@ const getEthereumContract = () => {
 }
 
 export const MarketTrackerProvider = ({ children }) => {
+    try{
+        new ethers.providers.Web3Provider(ethereum);
+    }catch(error){
+        alert("Please install metamask and refresh the page before continuing!");
+    }
     const provider = new ethers.providers.Web3Provider(ethereum);
     const [currentAccount, setCurrentAccount] = useState('');
     const [currentBalance, setCurrentBalance] = useState('');
