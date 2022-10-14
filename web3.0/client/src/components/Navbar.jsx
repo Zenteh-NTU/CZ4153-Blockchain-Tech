@@ -21,7 +21,7 @@ const Navbar = ({setScreenState}) => {
     const [toggleMenu, setToggleMenu] = useState(false);
     return (
         <nav className="fixed w-full flex md:justify-center justify-between items-center h-16 bg-gradient-to-r from-blue-700 to-pink-900">
-            <div className="cursor-pointer md:flex-[0.5] pl-10 md:pl-0 flex-initial justify-start items-center font-serif italic font-bold text-white text-xl" onClick={viewHome}>
+            <div className="cursor-pointer md:flex-[0.5] pl-10 md:pl-0 flex-initial justify-start items-center font-mono text-white text-2xl" onClick={viewHome}>
             To the moon
             </div>
             <ul className="text-white md:flex hidden list-none flex-row justify-end items-center flex-initial">
@@ -32,12 +32,12 @@ const Navbar = ({setScreenState}) => {
             </ul>
             {
                 !currentAccount && (
-                    <button className="bg-blue-700 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={connectWallet}>Login with Metamask</button>
+                    <button className="bg-blue-700 hover:bg-blue-500 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={connectWallet}>Login with Metamask</button>
                 )
             }
             {
                 currentAccount && (
-                    <button className="bg-blue-700 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button">{currentBalance} ETH</button>
+                    <button className="bg-blue-800 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button">{currentBalance} ETH</button>
                 )
             }
             <div className="flex relative pr-10">
