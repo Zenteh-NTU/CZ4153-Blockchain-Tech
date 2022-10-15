@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
-import { marketTrackerContractABI, marketContractABI, contractAddress } from '../utils/constants';
+import { marketTrackerContractABI, marketContractABI, transactionsABI, contractAddress } from '../utils/constants';
 
 export const MarketTrackerContext = React.createContext();
 const { ethereum } = window;
@@ -67,7 +67,13 @@ export const MarketTrackerProvider = ({ children }) => {
             //get contract
             const marketTrackerContract = getEthereumContract();
             console.log(marketTrackerContract);
+            //testing if contract works
+            const transactionHash = await marketTrackerContract.testFunction();
+            console.log(transactionHash); //should return hello world
 
+            //test function 2 calling from contract to contract
+            const transactionHash2 = await marketTrackerContract.testFunction_2('testName', ['side01','side02'], { value: ethers.utils.parseEther("1") });
+            console.log(transactionHash2); //should return hello world
 
         }catch (error){
             console.log(error);
