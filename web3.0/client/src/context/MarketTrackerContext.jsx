@@ -77,7 +77,10 @@ export const MarketTrackerProvider = ({ children }) => {
             //const transactionHash3 = await marketTrackerContract.testFunction_3(); //should make new testContract
             //console.log(transactionHash3); //should return hello world
             const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [YTokenName, NTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
+            alert("Transaction successful!");
+            window.location.reload();
             console.log(createMarketTransactionHash); //convert to unix time
+
 
         }catch (error){
             console.log(error);
@@ -112,8 +115,8 @@ export const MarketTrackerProvider = ({ children }) => {
                 marketList.push({
                     contractHash:contractHash, 
                     marketName: marketName,
-                    Y_Tokens: Y_Tokens.toString(), 
-                    N_Tokens: N_Tokens.toString(),
+                    Y_Tokens: parseInt(Y_Tokens), //1
+                    N_Tokens: parseInt(N_Tokens), //0
                     sides: sides, 
                     resultDate: resultDate
                 });
@@ -147,10 +150,11 @@ export const MarketTrackerProvider = ({ children }) => {
 
     useEffect(() => {
         checkIfWalletIsConnected();
+        fetchAllMarkets();
     }, []);
 
     return (
-        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, createNewMarket, setFormData, fetchAllMarkets, handleChange}}>
+        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, createNewMarket, setFormData, fetchAllMarkets, handleChange}}>
             {children}
         </MarketTrackerContext.Provider>
     )

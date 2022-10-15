@@ -5,7 +5,7 @@ const Welcome = ({setScreenState}) => {
         setScreenState("Market");
     }
     return (
-        <div className="w-full flex justify-center h-screen bg-gradient-to-r from-blue-900 to-pink-900">
+        <div className="w-full flex justify-center min-h-screen bg-gradient-to-r from-blue-900 to-pink-900">
             <div className="pr-0 pt-48 lg:pr-96 ">
                 <h1 className="text-4xl text-white sm:text-5xl">Trade in <br></br> Prediction Markets</h1>
                 <p className=" font-mono pt-3 text-white">Explore many different prediction markets. <br></br> Make your prediction and earn cryptocurrencies.</p>

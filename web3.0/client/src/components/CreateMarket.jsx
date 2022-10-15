@@ -77,9 +77,9 @@ const CreateMarket = ({setScreenState}) => {
                         <DateInput name="resultDay" handleChange={handleChange} className="bg-transparent text-white placeholder-slate-400" min={endDate} type="date"/>                
                     </div>
                     <div className="px-6 pt-4 pb-2">
-                    <button onClick={handleSubmit} type="button" className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Finish Creating market*</button>
-                    <button onClick={fetchMarkets} type="button" className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Fetch market*</button>
-                    <p className='font-mono pt-3 text-xs text-white'>*This transaction can never be reversed. A fee of 200 Wei be paid upon the creation of this market. <br></br>You will own 1 of each Y-Token and N-Token for this market upon market creation.</p>
+                    <button onClick={handleSubmit} type="button" className="bg-blue-600 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Create market*</button>
+                    {/* <button onClick={fetchMarkets} type="button" className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Fetch market*</button> */}
+                    <p className='font-mono pt-3 text-xs text-white'>*This transaction can NOT be reversed. A fee of 1 Ether will be paid upon the creation of this market.</p>
                         
                     </div>
                     
@@ -87,7 +87,7 @@ const CreateMarket = ({setScreenState}) => {
 
                 <h1 className="text-4xl underline text-white pt-32 sm:text-2xl">Additional Info</h1>
                 <ul className=" font-mono pt-3 list-disc text-white">
-                    <li>A fee of 200 Wei be paid upon the creation of this market. You will own 1 of each Y-Token and N-Token for this market upon market creation.</li>
+                    <li>A fee of 1 Ether will be paid upon the creation of this market.</li>
                     <li>The market will close 7 days before event result.</li>
                     <li>This market must be based on a real world event.</li>
                     <li>The outcome of this market will be verified by an oracle. The oracle will verify the results based on factual information.</li>
