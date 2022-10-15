@@ -11,11 +11,12 @@ const getEthereumContract = () => {
     const signer = provider.getSigner();
     const marketTrackerContract = new ethers.Contract(contractAddress, marketTrackerContractABI, signer);
 
-    console.log({
-        provider,
-        signer,
-        marketTrackerContract
-    });
+    // console.log({
+    //     provider,
+    //     signer,
+    //     marketTrackerContract
+    // });
+    return marketTrackerContract;
 }
 
 export const MarketTrackerProvider = ({ children }) => {
@@ -27,6 +28,11 @@ export const MarketTrackerProvider = ({ children }) => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const [currentAccount, setCurrentAccount] = useState('');
     const [currentBalance, setCurrentBalance] = useState('');
+    const [formData, setFormData] = useState({marketTitle: '', YTokenName: '', NTokenName:'', resultDay: ''});
+
+    const handleChange = (e, name) => {
+        setFormData((prevState) => ({ ...prevState, [name]: e.target.value}));
+    }
 
     const checkIfWalletIsConnected = async () => {
 
@@ -53,6 +59,22 @@ export const MarketTrackerProvider = ({ children }) => {
 
     }
 
+    const createNewMarket = async () => {
+        try{
+            if(!ethereum) return alert("Please install metamask!");
+            //get data from form...
+            const { marketTitle, YTokenName, NTokenName, resultDay } = formData;
+            //get contract
+            const marketTrackerContract = getEthereumContract();
+            console.log(marketTrackerContract);
+
+
+        }catch (error){
+            console.log(error);
+            throw new Error("No ethereum object.");
+        }
+    }
+
     const connectWallet = async () => {
         try {
             if(!ethereum) return alert("Please install metamask!");
@@ -71,7 +93,7 @@ export const MarketTrackerProvider = ({ children }) => {
     }, []);
 
     return (
-        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance }}>
+        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, createNewMarket, setFormData, handleChange}}>
             {children}
         </MarketTrackerContext.Provider>
     )

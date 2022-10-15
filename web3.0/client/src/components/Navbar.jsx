@@ -18,6 +18,10 @@ const Navbar = ({setScreenState}) => {
     const viewMarket = () => {
         setScreenState("Market");
     }
+
+    const viewTransactionHistory = () => {
+        setScreenState("Transactions");
+    }
     const [toggleMenu, setToggleMenu] = useState(false);
     return (
         <nav className="fixed w-full flex md:justify-center justify-between items-center h-16 bg-gradient-to-r from-blue-700 to-pink-900">
@@ -37,7 +41,7 @@ const Navbar = ({setScreenState}) => {
             }
             {
                 currentAccount && (
-                    <button className="bg-blue-800 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button">{currentBalance} ETH</button>
+                    <button className="bg-blue-800 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={viewTransactionHistory}>{currentBalance} ETH</button>
                 )
             }
             <div className="flex relative pr-10">

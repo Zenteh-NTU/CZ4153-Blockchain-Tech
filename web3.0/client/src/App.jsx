@@ -10,6 +10,7 @@ const App = () => {
         {activeWindow === "Market" && <Market setScreenState={setActiveWindow}/>}
         {activeWindow === "MarketDetail" && <MarketDetail/>}
         {activeWindow === "CreateMarket" && <CreateMarket/>}
+        {activeWindow === "Transactions" && <Transactions/>}
         {/* <MarketDetail/> */}
       </div>
         {/* <Services/>
