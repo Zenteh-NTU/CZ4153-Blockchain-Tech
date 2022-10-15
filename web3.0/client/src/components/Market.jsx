@@ -6,8 +6,6 @@ const Market = ({setScreenState}) => {
         setScreenState("CreateMarket");
     }
     const percentageCal = (x,y) => {
-        console.log(x+1);
-        console.log(x+y+2);
         return ((x+1)/(x+y+2) * 100);
     }
     return (
