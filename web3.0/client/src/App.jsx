@@ -1,4 +1,4 @@
-import { Navbar , Welcome, Footer , Services, Transactions, Market, MarketDetail } from './components';
+import { Navbar , Welcome, Footer , CreateMarket, Transactions, Market, MarketDetail } from './components';
 import { useState } from 'react';
 const App = () => {
   const [activeWindow, setActiveWindow] = useState("Welcome");
@@ -7,8 +7,9 @@ const App = () => {
       <div>
         {<Navbar setScreenState={setActiveWindow}/>}
         {activeWindow === "Welcome" && <Welcome setScreenState={setActiveWindow}/>}
-        {activeWindow === "Market" && <Market/>}
+        {activeWindow === "Market" && <Market setScreenState={setActiveWindow}/>}
         {activeWindow === "MarketDetail" && <MarketDetail/>}
+        {activeWindow === "CreateMarket" && <CreateMarket/>}
         {/* <MarketDetail/> */}
       </div>
         {/* <Services/>
