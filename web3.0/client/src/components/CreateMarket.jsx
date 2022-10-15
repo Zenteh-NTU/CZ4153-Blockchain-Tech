@@ -26,11 +26,10 @@ const Input = ({ placeholder, name, type, value, className, handleChange }) => (
 
 const CreateMarket = ({setScreenState}) => {
     const [endDate, setEndDate] = useState(moment (new Date).add(2, 'w').format('YYYY-MM-DD'));
-    const { formData, createNewMarket, handleChange } = useContext(MarketTrackerContext);
+    const { formData, createNewMarket, fetchAllMarkets, handleChange } = useContext(MarketTrackerContext);
     const handleSubmit = (e) => {
         const { marketTitle, YTokenName, NTokenName, resultDay } = formData;
         e.preventDefault();
-        console.log(formData);
         
         if(!marketTitle || !YTokenName || !NTokenName || !resultDay) {
             alert("Please make sure all fields are entered");
@@ -40,7 +39,16 @@ const CreateMarket = ({setScreenState}) => {
 
 
     }
-    console.log(moment (new Date).format('YYYY-MM-DD'));
+    const fetchMarkets = (e) => {
+        const { marketTitle, YTokenName, NTokenName, resultDay } = formData;
+        e.preventDefault();
+        
+        fetchAllMarkets();
+
+
+    }
+
+
     //const min_date = new Date();
     //setEndDate(moment (min_date).format('YYYY-MM-DD'));
     //console.log(min_date);
@@ -70,6 +78,7 @@ const CreateMarket = ({setScreenState}) => {
                     </div>
                     <div className="px-6 pt-4 pb-2">
                     <button onClick={handleSubmit} type="button" className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Finish Creating market*</button>
+                    <button onClick={fetchMarkets} type="button" className="bg-red-700 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg" >Fetch market*</button>
                     <p className='font-mono pt-3 text-xs text-white'>*This transaction can never be reversed. A fee of 200 Wei be paid upon the creation of this market. <br></br>You will own 1 of each Y-Token and N-Token for this market upon market creation.</p>
                         
                     </div>

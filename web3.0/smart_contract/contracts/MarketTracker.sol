@@ -1,11 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
 
-//To deploy this contract, 
-//you must cd into smart_contracts folder
-//from your terminal run 'npx hardhat run scripts/deploy.js --network ganache'
-//remember the address of deployed contract and record in client/utils/constants.js
-//remember to put all the generated artifact files into the utils folder
-
 pragma solidity >=0.8.0 <0.9.0; //use 0.8.0
 //import "contracts/Market.sol";
 
@@ -18,27 +12,46 @@ contract MarketTracker {
 
     //simple test functions to test if contract file is working=========
 
-    Market[] public testMarketContracts;
+    TestContract[] public testContracts;
     uint public testContractsCount; 
     string public testVariable = "Hello World";
     function testFunction() public view returns (string memory){
         return testVariable;
     }
-    function testFunction_2(string memory _marketName, string[2] memory _side) public payable returns (string memory){
+    function testFunction_2() public payable returns (string memory){
         require(msg.value == 1 ether, "You need to pass in exactly 1 ether");
-        Market newMarket = new Market(_marketName, address(this), _side);
-        return newMarket.testFunction();
+        TestContract newTestContract = new TestContract();
+        testContracts.push(newTestContract);
+        return "Test contract created";
+    }
+    function testFunction_3() public view returns (string memory){
+        return testContracts[0].testFunction();
+    }
+    function getTestArray() public view returns (TestContract[] memory){
+        return testContracts;
+    }
+    function getFirstTestArray() public view returns (string memory){
+        return testContracts[0].testFunction();
     }
 
     //================================
 
-    function addNewMarket(string memory _marketName, string[2] memory _side) public payable returns (string memory){
-        Market newMarket = new Market(_marketName, address(this), _side);
+
+
+    function addNewMarket(string memory _marketName, string[2] memory _side, uint _resultDate) public payable returns (string memory){
+        require(msg.value == 1 ether, "You need to pass in exactly 1 ether");
+        Market newMarket = new Market(_marketName, address(this), _side, _resultDate);
         marketContracts.push(newMarket);
         contractsCount++;
         //console.log("Market Created: ", _marketName);
         return string(abi.encodePacked("Market Created: ", _marketName, "| Sides:", _side[0], _side[1]));
     }
+
+
+    function getMarketArray() public view returns (Market[] memory){
+        return marketContracts;
+    }
+
     //function getMarketContracts() public view returns (address[] memory){
     //    return marketContracts;
     //}
@@ -60,27 +73,13 @@ contract Transactions {
 
 }
 
-//markets
-contract Market {
-    string public MarketName;
-    string[2] public Side; 
-    mapping(uint => uint) public bets;
-    mapping(address => mapping(uint => uint)) public betsPerGambler;
-    address public Owner;
-    
-    
-    constructor(string memory _marketName, address _owner, string[2] memory _side){
-        MarketName = _marketName;
-        Side = _side;
-        Owner = _owner;
-        bets[0] = 0;
-        bets[1] = 0;
+//test contract
+
+contract TestContract {
+//simple test functions to test if contract file is working=========
+    constructor() {
+
     }
-
-
-
-    //simple test functions to test if contract file is working=========
-
     string public testVariable = "Hello from the other side!";
     function testFunction() public view returns (string memory){
         return testVariable;
@@ -88,29 +87,51 @@ contract Market {
 
     //================================
 
+
+}
+
+//markets
+contract Market {
+    string public MarketName;
+    string[2] public Side; 
+//    mapping(uint => uint) public bets;
+//    mapping(address => mapping(uint => uint)) public betsPerGambler;
+    address public Owner;
+    uint Y_Tokens;
+    uint N_Tokens;
+    uint resultDate;
+    
+    
+    constructor(string memory _marketName, address _owner, string[2] memory _side, uint _resultDate){
+        MarketName = _marketName;
+        Side = _side;
+        Owner = _owner;
+        Y_Tokens = 0;
+        N_Tokens = 0;
+        resultDate = _resultDate;
+    }
+
+
     function getMarketName() public view returns (string memory) {
         return MarketName;
     }
-    function placeBet(uint sideIndex) external payable{
-        bets[sideIndex] += 1;
-        betsPerGambler[msg.sender][sideIndex] = msg.value;
 
-    }
-
-    function getSide0Count() public view returns (uint){
-        return bets[0];
-    }
-    function getSide1Count() public view returns (uint){
-        return bets[1];
+    function getSide() public view returns (string[2] memory) {
+        return Side;
     }
 
-    function getSide0Bet() public view returns (uint){
-        return betsPerGambler[msg.sender][0];
+    function getYTokens() public view returns (uint){
+        return Y_Tokens;
     }
 
-    function getSide1Bet() public view returns (uint){
-        return betsPerGambler[msg.sender][1];
+    function getNTokens() public view returns (uint){
+        return N_Tokens;
     }
+
+    function getResultDate() public view returns (uint){
+        return resultDate;
+    }
+
 
 
     // function getOwnerBetAmount() public view returns (uint[2] memory){
