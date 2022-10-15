@@ -76,7 +76,7 @@ export const MarketTrackerProvider = ({ children }) => {
             //const transactionHash2 = await marketTrackerContract.testFunction_2({ value: ethers.utils.parseEther("1") }); //should make new testContract
             //const transactionHash3 = await marketTrackerContract.testFunction_3(); //should make new testContract
             //console.log(transactionHash3); //should return hello world
-            const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [YTokenName, NTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
+            const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
             alert("Transaction successful!");
             window.location.reload();
             console.log(createMarketTransactionHash); //convert to unix time
@@ -107,7 +107,7 @@ export const MarketTrackerProvider = ({ children }) => {
 
                 const marketName = await marketContract.getMarketName();
                 const Y_Tokens = await marketContract.getYTokens();
-                const N_Tokens = await marketContract.getYTokens();
+                const N_Tokens = await marketContract.getNTokens();
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
                 const resultDate = new Date(resultUNIXDate.toString() * 1000);
