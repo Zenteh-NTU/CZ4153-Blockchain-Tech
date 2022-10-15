@@ -36,12 +36,22 @@ const Navbar = ({setScreenState}) => {
             </ul>
             {
                 !currentAccount && (
-                    <button className="bg-blue-700 hover:bg-blue-500 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={connectWallet}>Login with Metamask</button>
+                    <>
+                        <ul className="text-white md:flex hidden list-none flex-row justify-end items-center flex-initial">
+                            <li className="mx-4 cursor-pointer">0.0 ETH</li>
+                        </ul>
+                        <button className="bg-blue-700 hover:bg-blue-500 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={connectWallet}>Login with Metamask</button>
+                    </>
                 )
             }
             {
                 currentAccount && (
-                    <button className="bg-blue-800 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={viewTransactionHistory}>{currentBalance} ETH</button>
+                    <>
+                        <ul className="text-white md:flex hidden list-none flex-row justify-end items-center flex-initial">
+                            <li className="mx-4 cursor-pointer">{currentBalance} ETH</li>
+                        </ul>
+                        <button className="bg-blue-800 md:flex hidden text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-800 shadow-lg " type="button" onClick={viewTransactionHistory}>{currentAccount.substr(0, 8)}...{currentAccount.substr(-8,8)}</button>
+                    </>
                 )
             }
             <div className="flex relative pr-10">
