@@ -24,7 +24,7 @@ const Market = ({setScreenState}) => {
                     )
                 }
                 {listOfMarkets.map((item, index) => (
-                    <div key="{item}" className=" mt-6 w-full hover:bg-black cursor-pointer bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg" onClick={() => viewMarketDetail(item)}>
+                    <div key={index} className=" mt-6 w-full hover:bg-black cursor-pointer bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg" onClick={() => viewMarketDetail(item)}>
                     <div className="px-6 py-4">
                         <div className="font-bold text-xl mb-2 text-white">{item.marketName}</div>
                         <div className="w-full h-10 items-center pb-12" >
