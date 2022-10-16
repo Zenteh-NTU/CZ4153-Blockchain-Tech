@@ -10,7 +10,7 @@ module.exports = {
     ganache: {
       url: 'HTTP://127.0.0.1:7545',
       chainId: 1337,
-      accounts: ['YOUR ETHEREUM ACCOUNT PRIVATE KEY HERE TO DEPLOY CONTRACT']
+      accounts: ['ENTER YOUR PRIVATE KEY HERE']
     }
   }
 };

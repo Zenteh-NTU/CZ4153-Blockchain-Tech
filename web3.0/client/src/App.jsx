@@ -1,5 +1,6 @@
 import { Navbar , Welcome, Footer , CreateMarket, Transactions, Market, MarketDetail } from './components';
 import { useState } from 'react';
+
 const App = () => {
   const [activeWindow, setActiveWindow] = useState("Welcome");
   return (
