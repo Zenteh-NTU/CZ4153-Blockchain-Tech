@@ -8,42 +8,31 @@ pragma solidity >=0.8.0 <0.9.0; //use 0.8.0
 contract MarketTracker {
 
     Market[] public marketContracts;
-    uint public contractsCount; 
+    uint public marketContractsCount; 
+
+    Transactions[] public transactionsContracts;
+    uint public transactionsContractsCount; 
 
 
     //simple test functions to test if contract file is working=========
 
-    TestContract[] public testContracts;
-    uint public testContractsCount; 
     string public testVariable = "Hello World";
     function testFunction() public view returns (string memory){
         return testVariable;
     }
-    function testFunction_2() public payable returns (string memory){
-        require(msg.value == 1 ether, "You need to pass in exactly 1 ether");
-        TestContract newTestContract = new TestContract();
-        testContracts.push(newTestContract);
-        return "Test contract created";
-    }
-    function testFunction_3() public view returns (string memory){
-        return testContracts[0].testFunction();
-    }
-    function getTestArray() public view returns (TestContract[] memory){
-        return testContracts;
-    }
-    function getFirstTestArray() public view returns (string memory){
-        return testContracts[0].testFunction();
-    }
 
     //================================
 
-
-
     function addNewMarket(string memory _marketName, string[2] memory _side, uint _resultDate) public payable returns (string memory){
         require(msg.value == 1 ether, "You need to pass in exactly 1 ether");
-        Market newMarket = new Market(_marketName, address(this), _side, _resultDate);
+        Market newMarket = new Market(_marketName, address(this), msg.sender ,_side, _resultDate);
         marketContracts.push(newMarket);
-        contractsCount++;
+        marketContractsCount++;
+
+        Transactions newTransaction = new Transactions("Market Creation", msg.value, msg.sender, address(this), "", 0);
+        transactionsContracts.push(newTransaction);
+        transactionsContractsCount++;
+
         //console.log("Market Created: ", _marketName);
         return string(abi.encodePacked("Market Created: ", _marketName, "| Sides:", _side[0], _side[1]));
     }
@@ -53,9 +42,15 @@ contract MarketTracker {
         return marketContracts;
     }
 
-    //function getMarketContracts() public view returns (address[] memory){
-    //    return marketContracts;
-    //}
+    function getTransactionsArray() public view returns (Transactions[] memory){
+        return transactionsContracts;
+    }
+
+    function pushToTransactionsArray(Transactions _transaction) public returns (Transactions[] memory){
+        transactionsContracts.push(_transaction);
+        return transactionsContracts;
+    }
+
     function getNameBasedOffIndex(uint marketIndex) external view  returns (string memory){
         return marketContracts[marketIndex].getMarketName();
     }
@@ -63,58 +58,61 @@ contract MarketTracker {
 
 //transactions
 contract Transactions {
-    string public tx_hash;
-    string public transaction_type;
-    uint ethereum_value;
-    address owner_hash;
+    string public transaction_type; //'contract creation' 'buy' 'sell' 'reward claim'
+    uint ethereum_value; //in ethers
+    address owner_hash; //owner hash account
+    address recipient_hash; //recipient hash account
+    string public token_type; //token type if transaction_type is 'buy' or 'sell' | 'Y-Token' or "N-Token'
+    uint token_count; // Token bought, leave as 0 if no tokens are bought
 
-    constructor(string memory _tx_hash, string memory _transaction_type, uint _ethereum_value, address _owner_hash){
 
+    constructor(string memory _transaction_type, uint _ethereum_value, address _owner_hash, address _recipient_hash, string memory _token_type, uint _token_count){
+        transaction_type = _transaction_type; //'Market Creation' 'buy' 'sell' 'reward claim'
+        ethereum_value = _ethereum_value; //in ethers
+        owner_hash = _owner_hash; //owner hash account
+        recipient_hash = _recipient_hash; //recipient hash account
+        token_type = _token_type; //token type if transaction_type is 'buy' or 'sell' | 'Y-Token' or "N-Token'
+        token_count = _token_count; // Token bought, leave as 0 if no tokens are bought
     }
 
 }
 
-//test contract
-
-contract TestContract {
-//simple test functions to test if contract file is working=========
-    constructor() {
-
-    }
-    string public testVariable = "Hello from the other side!";
-    function testFunction() public view returns (string memory){
-        return testVariable;
-    }
-
-    //================================
-
-
-}
 
 //markets
 contract Market {
-    string public MarketName;
+    string public marketName;
     string[2] public Side; 
 //    mapping(uint => uint) public bets;
-//    mapping(address => mapping(uint => uint)) public betsPerGambler;
-    address public Owner;
-    uint Y_Tokens;
-    uint N_Tokens;
-    uint resultDate;
+    mapping(address => mapping(uint => uint)) public tokensPerGambler; //1 = Y-Token, 0 = N-Token
+    address public factoryAddress; //MarketTracker address
+    address public owner; 
+    uint public Y_Tokens;
+    uint public N_Tokens;
+    uint public resultDate;
     
-    
-    constructor(string memory _marketName, address _owner, string[2] memory _side, uint _resultDate){
-        MarketName = _marketName;
+    uint public currentYPrice;
+    uint public currentNPrice;
+    uint public maxPrice = 1e18;
+
+    constructor(string memory _marketName, address _factoryAddress, address _owner, string[2] memory _side, uint _resultDate){
+        marketName = _marketName;
         Side = _side;
-        Owner = _owner;
+        factoryAddress = _factoryAddress;
+        owner = _owner;
         Y_Tokens = 0;
         N_Tokens = 0;
         resultDate = _resultDate;
+        currentYPrice = maxPrice / (Y_Tokens + N_Tokens + 2) * (Y_Tokens + 1);
+        currentNPrice = maxPrice / (Y_Tokens + N_Tokens + 2) * (N_Tokens + 1);
+    }
+
+    function buyYToken(uint amount) public payable{
+
     }
 
 
     function getMarketName() public view returns (string memory) {
-        return MarketName;
+        return marketName;
     }
 
     function getSide() public view returns (string[2] memory) {
@@ -129,9 +127,27 @@ contract Market {
         return N_Tokens;
     }
 
+    function getYPrice() public view returns (uint){
+        return currentYPrice;
+    }
+
+    function getNPrice() public view returns (uint){
+        return currentYPrice;
+    }
+
     function getResultDate() public view returns (uint){
         return resultDate;
     }
+
+    function getFactoryAddress() public view returns (address) {
+        return factoryAddress;
+    }
+
+    function getOwnerAddress() public view returns (address) {
+        return owner;
+    }
+
+
 
 
 

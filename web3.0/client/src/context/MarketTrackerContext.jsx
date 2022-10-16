@@ -29,6 +29,7 @@ export const MarketTrackerProvider = ({ children }) => {
     const [currentAccount, setCurrentAccount] = useState('');
     const [currentBalance, setCurrentBalance] = useState('');
     const [listOfMarkets, setListOfMarkets] = useState([]);
+    const [currentMarket, setCurrentMarket] = useState({});
     const [formData, setFormData] = useState({marketTitle: '', YTokenName: '', NTokenName:'', resultDay: ''});
 
     const handleChange = (e, name) => {
@@ -72,10 +73,6 @@ export const MarketTrackerProvider = ({ children }) => {
             const transactionHash = await marketTrackerContract.testFunction();
             console.log(transactionHash); //should return hello world
 
-            //test function 2 calling from contract to contract
-            //const transactionHash2 = await marketTrackerContract.testFunction_2({ value: ethers.utils.parseEther("1") }); //should make new testContract
-            //const transactionHash3 = await marketTrackerContract.testFunction_3(); //should make new testContract
-            //console.log(transactionHash3); //should return hello world
             const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
             alert("Transaction successful!");
             window.location.reload();
@@ -104,19 +101,27 @@ export const MarketTrackerProvider = ({ children }) => {
             for(var i=0; i<marketHashArray.length; i++){
                 const contractHash = marketHashArray[i];
                 const marketContract = getEthereumContract(contractHash, marketContractABI);
-
+                const ownerHash = await marketContract.getOwnerAddress();
                 const marketName = await marketContract.getMarketName();
+
                 const Y_Tokens = await marketContract.getYTokens();
                 const N_Tokens = await marketContract.getNTokens();
+
+                const Y_Price = await marketContract.getYPrice();
+                const N_Price = await marketContract.getNPrice();
+
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
                 const resultDate = new Date(resultUNIXDate.toString() * 1000);
                 
                 marketList.push({
                     contractHash:contractHash, 
+                    ownerHash: ownerHash,
                     marketName: marketName,
                     Y_Tokens: parseInt(Y_Tokens), //1
                     N_Tokens: parseInt(N_Tokens), //0
+                    Y_Price: ethers.utils.formatEther(Y_Price), 
+                    N_Price: ethers.utils.formatEther(N_Price), 
                     sides: sides, 
                     resultDate: resultDate
                 });
@@ -154,7 +159,7 @@ export const MarketTrackerProvider = ({ children }) => {
     }, []);
 
     return (
-        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, createNewMarket, setFormData, fetchAllMarkets, handleChange}}>
+        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, currentMarket, createNewMarket, setCurrentMarket, setFormData, fetchAllMarkets, handleChange}}>
             {children}
         </MarketTrackerContext.Provider>
     )

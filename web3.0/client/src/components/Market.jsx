@@ -1,12 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { MarketTrackerContext } from '../context/MarketTrackerContext';
 const Market = ({setScreenState}) => {
-    const {currentAccount , listOfMarkets} = useContext(MarketTrackerContext);
+    const {currentAccount , listOfMarkets, setCurrentMarket} = useContext(MarketTrackerContext);
     const viewCreateMarket = () => {
         setScreenState("CreateMarket");
     }
     const percentageCal = (x,y) => {
         return ((x+1)/(x+y+2) * 100);
+    }
+    const viewMarketDetail = (item) => {
+        //console.log(item);
+        setCurrentMarket(item);
+        setScreenState("MarketDetail");
     }
     return (
         <div className="w-full flex justify-center pb-10 min-h-screen bg-gradient-to-r from-blue-900 to-pink-900">
@@ -19,7 +24,7 @@ const Market = ({setScreenState}) => {
                     )
                 }
                 {listOfMarkets.map((item, index) => (
-                    <div className=" mt-6 w-full hover:bg-black bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg">
+                    <div key="{item}" className=" mt-6 w-full hover:bg-black cursor-pointer bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg" onClick={() => viewMarketDetail(item)}>
                     <div className="px-6 py-4">
                         <div className="font-bold text-xl mb-2 text-white">{item.marketName}</div>
                         <div className="w-full h-10 items-center pb-12" >
@@ -34,8 +39,11 @@ const Market = ({setScreenState}) => {
                     <div className=" w-full bg-red-500 h-2.5">
                         <div className="bg-blue-400 h-2.5" style={{ width: percentageCal(item.Y_Tokens,item.N_Tokens)+"%" }}></div>
                     </div>
-                    <div className="px-6 pt-4 pb-2">
-                        <span className="inline-block bg-slate-700 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Contract Hash: {item.contractHash}</span>
+                    <div className="px-6 pt-4">
+                        <span className="inline-block bg-slate-700 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Market Hash: {item.contractHash}</span>
+                    </div>
+                    <div className="px-6 pb-2">
+                        <span className="inline-block bg-slate-700 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Owner: {item.ownerHash}</span>
                     </div>
                 </div>
 
