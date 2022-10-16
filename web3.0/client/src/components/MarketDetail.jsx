@@ -6,7 +6,7 @@ const Input = ({ placeholder, name, type, value, className, handleChange }) => (
     <input
       placeholder={placeholder}
       type={type}
-      value={value}
+      defaultValue={1}
       className={className}
     />
   );
@@ -64,9 +64,9 @@ const MarketDetail = () => {
                     </div>
                 </div>
 
-                <div className=" mt-6 w-full p-5 bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg grid grid-cols-2 grid-rows-1">
+                <div className=" mt-6 w-full p-5 bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg">
                     <h1 className="text-4xl text-white sm:text-2xl">Buy and Sell</h1>
-                    <div className=" mt-16 w-11/12 p-5 bg-red-900 max-h-full rounded overflow-hidden shadow-lg col-span-0 row-span-2">
+                    <div className="mt-6 w-full p-5 bg-red-900 max-h-full rounded overflow-hidden shadow-lg">
                         <h1 className="text-4xl text-white sm:text-2xl">N-Token</h1>
                         <p className="font-mono pt-3 text-xl text-white">You own: [number here] N-Tokens</p>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to buy..</h1>
@@ -92,7 +92,7 @@ const MarketDetail = () => {
                         </div>
 
                     </div>
-                    <div className=" mt-6 w-11/12 p-5 bg-sky-900 max-h-full rounded overflow-hidden shadow-lg col-span-0">
+                    <div className="mt-6 w-full p-5 bg-sky-900 max-h-full rounded overflow-hidden shadow-lg">
                         <h1 className="text-4xl text-white bg sm:text-2xl">Y-Token</h1>
                         <p className="font-mono pt-3 text-xl text-white">You own: [number here] Y-Tokens</p>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to buy..</h1>
