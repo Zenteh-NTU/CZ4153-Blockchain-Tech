@@ -34,6 +34,7 @@ const MarketDetail = () => {
                 <div className="pt-4">
                     <span className="inline-block bg-slate-900 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Outcome Date: {outcomeDate(currentMarket.resultDate)}</span>
                 </div>
+
                 <div>
                     <span className="inline-block bg-slate-900 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Market Close Date: {marketCloseDate(currentMarket.resultDate)}</span>
                 </div>
@@ -74,7 +75,7 @@ const MarketDetail = () => {
                             <span className='text-xl pt-3 text-white '> N-Token(s)</span>
 
                             <p className=" font-mono pt-3 text-white">Price of N-Token <span className=' text-red-400'>(Option:{currentMarket.sides[0]})</span>: {currentMarket.N_Price} ETH each</p>
-                            <p className=" font-mono text-white">Quanity to buy: [value here]</p>
+                            <p className=" font-mono text-white">Quantity to buy: [value here]</p>
 
                             <button className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg">BUY</button>
                         </div>
