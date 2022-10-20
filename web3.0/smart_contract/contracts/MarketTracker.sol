@@ -3,19 +3,6 @@
 pragma solidity >=0.8.0 <0.9.0; //use 0.8.0
 
 //import "contracts/Market.sol";
-library SafeMath {
-    // Only relevant functions
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b <= a);
-        return a - b;
-    }
-
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        assert(c >= a);
-        return c;
-    }
-}
 
 //keeps track of markets and transactions
 contract MarketTracker {
@@ -145,6 +132,7 @@ contract Market {
     uint256 public currentYPrice;
     uint256 public currentNPrice;
     uint256 public maxPrice = 1e18;
+    event Transfer(address indexed from, address indexed to, uint256 tokens);
 
     constructor(
         string memory _marketName,
@@ -174,6 +162,8 @@ contract Market {
             "",
             amountOfCoin
         );
+        emit Transfer(msg.sender, address(this), amount);
+        Y_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][1] += amountOfCoin;
     }
 
@@ -187,6 +177,8 @@ contract Market {
             "",
             amountOfCoin
         );
+        emit Transfer(msg.sender, address(this), amount);
+        N_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][0] += amountOfCoin;
     }
 
@@ -234,7 +226,7 @@ contract Market {
     // }
 }
 
-contract yTokens {
+contract YTokens {
     event Approval(
         address indexed tokenOwner,
         address indexed spender,
@@ -270,7 +262,7 @@ contract yTokens {
     }
 
     function transfer(address receiver, uint256 numTokens)
-        public
+        external
         returns (bool)
     {
         require(numTokens <= balances[msg.sender]);
@@ -281,7 +273,7 @@ contract yTokens {
     }
 
     function approve(address delegate, uint256 numTokens)
-        public
+        external
         returns (bool)
     {
         allowed[msg.sender][delegate] = numTokens;
@@ -304,7 +296,7 @@ contract yTokens {
     }
 }
 
-contract nTokens {
+contract NTokens {
     event Approval(
         address indexed tokenOwner,
         address indexed spender,
