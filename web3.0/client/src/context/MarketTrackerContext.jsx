@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 import { marketTrackerContractABI, marketContractABI, transactionsABI, contractAddress } from '../utils/constants';
+import { isAddress, parseBytes32String } from 'ethers/lib/utils';
 
 export const MarketTrackerContext = React.createContext();
 const { ethereum } = window;
 
-const getEthereumContract = (smartContractAddress, ABI) => {
+export const getEthereumContract = (smartContractAddress, ABI) => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const marketTrackerContract = new ethers.Contract(smartContractAddress, ABI, signer);
@@ -17,6 +18,29 @@ const getEthereumContract = (smartContractAddress, ABI) => {
     //     marketTrackerContract
     // });
     return marketTrackerContract;
+}
+
+export const tradeTokens = async (string, contract, data, price) => {
+    const market = getEthereumContract(contract, marketContractABI);
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    const oracleAddress = market.getOwnerAddress();
+    const amount = data * price;
+    console.log(market);
+    console.log(data);
+    if (string === "buyY") {
+        const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
+        market.buyYToken(data);
+    } else if (string === "sellY") {
+        const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
+        market.sellYToken(data);
+    } else if (string === "buyN") {
+        const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
+        market.buyNToken(data);
+    } else {
+        const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
+        market.sellNToken(data);
+    }
 }
 
 export const MarketTrackerProvider = ({ children }) => {
@@ -111,12 +135,7 @@ export const MarketTrackerProvider = ({ children }) => {
 
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
-                const buyYTokens = await marketContract.buyYTokens();
-                const buyNTokens = await marketContract.buyNTokens();
-                const sellYTokens = await marketContract.sellYTokens();
-                const sellNTokens = await marketContract.sellNTokens();
                 const resultDate = new Date(resultUNIXDate.toString() * 1000);
-
                 
                 marketList.push({
                     contractHash:contractHash, 
@@ -127,11 +146,7 @@ export const MarketTrackerProvider = ({ children }) => {
                     Y_Price: ethers.utils.formatEther(Y_Price), 
                     N_Price: ethers.utils.formatEther(N_Price), 
                     sides: sides, 
-                    resultDate: resultDate,
-                    buyYTokens: buyYTokens,
-                    buyNTokens: buyNTokens,
-                    sellYTokens: sellYTokens,
-                    sellNTokens: sellNTokens
+                    resultDate: resultDate
                 });
             }
             

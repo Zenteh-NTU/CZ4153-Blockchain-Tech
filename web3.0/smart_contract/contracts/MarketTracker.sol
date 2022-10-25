@@ -196,6 +196,10 @@ contract Market {
     }
 
     function sellYToken(uint256 amountOfCoin) public payable {
+        require(
+            tokensPerGambler[msg.sender][1] >= amountOfCoin,
+            "Not Enough Tokens!"
+        );
         uint256 amount = amountOfCoin * currentYPrice;
         Transactions newTransaction = new Transactions(
             "Sell",
@@ -211,6 +215,10 @@ contract Market {
     }
 
     function sellNToken(uint256 amountOfCoin) public payable {
+        require(
+            tokensPerGambler[msg.sender][0] >= amountOfCoin,
+            "Not Enough Tokens!"
+        );
         uint256 amount = amountOfCoin * currentNPrice;
         Transactions newTransaction = new Transactions(
             "Sell",
@@ -259,6 +267,14 @@ contract Market {
 
     function getOwnerAddress() public view returns (address) {
         return owner;
+    }
+
+    function getUserYTokens() public view returns (uint256) {
+        return tokensPerGambler[msg.sender][1];
+    }
+
+    function getUserNTokens() public view returns (uint256) {
+        return tokensPerGambler[msg.sender][0];
     }
 
     // function getOwnerBetAmount() public view returns (uint[2] memory){

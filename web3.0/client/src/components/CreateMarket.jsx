@@ -39,6 +39,7 @@ const CreateMarket = ({setScreenState}) => {
 
 
     }
+
     const fetchMarkets = (e) => {
         const { marketTitle, YTokenName, NTokenName, resultDay } = formData;
         e.preventDefault();
