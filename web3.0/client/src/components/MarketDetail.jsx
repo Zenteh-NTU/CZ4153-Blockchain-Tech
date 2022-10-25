@@ -75,7 +75,7 @@ const MarketDetail = () => {
                             <span className='text-xl pt-3 text-white '> Y-Token(s)</span>
                             <p className=" font-mono pt-3 text-white">Price of Y-Token <span className=' text-blue-300'>(Option:{currentMarket.sides[1]})</span>: {currentMarket.Y_Price} ETH each</p>
                             <p className=" font-mono text-white">Quanity to buy: [value here]</p>
-                            <button className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg">BUY</button>
+                            <button className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg" onClick={ currentMarket.buyYTokens }>BUY</button>
                         </div>
 
                         <hr></hr>

@@ -79,6 +79,7 @@ contract MarketTracker {
         returns (Transactions[] memory)
     {
         transactionsContracts.push(_transaction);
+        transactionsContractsCount += 1;
         return transactionsContracts;
     }
 
@@ -132,7 +133,9 @@ contract Market {
     uint256 public currentYPrice;
     uint256 public currentNPrice;
     uint256 public maxPrice = 1e18;
-    event Transfer(address indexed from, address indexed to, uint256 tokens);
+
+    event Transaction(address buyer, address seller, uint256 amount);
+    MarketTracker marketTracker;
 
     constructor(
         string memory _marketName,
@@ -152,6 +155,16 @@ contract Market {
         currentNPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (N_Tokens + 1);
     }
 
+    function addTransactions(
+        address buyer,
+        address seller,
+        uint256 amount,
+        Transactions transaction
+    ) public payable {
+        marketTracker.pushToTransactionsArray(transaction);
+        emit Transaction(buyer, seller, amount);
+    }
+
     function buyYToken(uint256 amountOfCoin) public payable {
         uint256 amount = amountOfCoin * currentYPrice;
         Transactions newTransaction = new Transactions(
@@ -162,12 +175,42 @@ contract Market {
             "",
             amountOfCoin
         );
-        emit Transfer(msg.sender, address(this), amount);
         Y_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][1] += amountOfCoin;
+        addTransactions(msg.sender, address(this), amount, newTransaction);
     }
 
     function buyNToken(uint256 amountOfCoin) public payable {
+        uint256 amount = amountOfCoin * currentNPrice;
+        Transactions newTransaction = new Transactions(
+            "Buy",
+            amount,
+            msg.sender,
+            address(this),
+            "",
+            amountOfCoin
+        );
+        N_Tokens += amountOfCoin;
+        tokensPerGambler[msg.sender][0] += amountOfCoin;
+        addTransactions(msg.sender, address(this), amount, newTransaction);
+    }
+
+    function sellYToken(uint256 amountOfCoin) public payable {
+        uint256 amount = amountOfCoin * currentYPrice;
+        Transactions newTransaction = new Transactions(
+            "Sell",
+            amount,
+            msg.sender,
+            address(this),
+            "",
+            amountOfCoin
+        );
+        Y_Tokens -= amountOfCoin;
+        tokensPerGambler[msg.sender][1] -= amountOfCoin;
+        addTransactions(address(this), msg.sender, amount, newTransaction);
+    }
+
+    function sellNToken(uint256 amountOfCoin) public payable {
         uint256 amount = amountOfCoin * currentNPrice;
         Transactions newTransaction = new Transactions(
             "Sell",
@@ -177,9 +220,9 @@ contract Market {
             "",
             amountOfCoin
         );
-        emit Transfer(msg.sender, address(this), amount);
-        N_Tokens += amountOfCoin;
-        tokensPerGambler[msg.sender][0] += amountOfCoin;
+        N_Tokens -= amountOfCoin;
+        tokensPerGambler[msg.sender][0] -= amountOfCoin;
+        addTransactions(address(this), msg.sender, amount, newTransaction);
     }
 
     function getMarketName() public view returns (string memory) {
@@ -224,144 +267,4 @@ contract Market {
     //     sideAmt[1] = betsPerGambler[msg.sender][1];
     //     return sideAmt;
     // }
-}
-
-contract YTokens {
-    event Approval(
-        address indexed tokenOwner,
-        address indexed spender,
-        uint256 tokens
-    );
-    event Transfer(address indexed from, address indexed to, uint256 tokens);
-    string public name;
-    string public symbol;
-    uint8 public decimals;
-    uint256 totalSupply_;
-    mapping(address => uint256) public balances;
-    mapping(address => mapping(address => uint256)) public allowed;
-
-    constructor(uint256 total) {
-        totalSupply_ = total;
-        balances[msg.sender] = totalSupply_;
-    }
-
-    function totalSupply() public view returns (uint256) {
-        return totalSupply_;
-    }
-
-    function balanceOf(address tokenOwner) public view returns (uint256) {
-        return balances[tokenOwner];
-    }
-
-    function allowance(address tokenOwner, address spender)
-        public
-        view
-        returns (uint256)
-    {
-        return allowed[tokenOwner][spender];
-    }
-
-    function transfer(address receiver, uint256 numTokens)
-        external
-        returns (bool)
-    {
-        require(numTokens <= balances[msg.sender]);
-        balances[msg.sender] = balances[msg.sender] - numTokens;
-        balances[receiver] = balances[receiver] + numTokens;
-        emit Transfer(msg.sender, receiver, numTokens);
-        return true;
-    }
-
-    function approve(address delegate, uint256 numTokens)
-        external
-        returns (bool)
-    {
-        allowed[msg.sender][delegate] = numTokens;
-        emit Approval(msg.sender, delegate, numTokens);
-        return true;
-    }
-
-    function transferFrom(
-        address owner,
-        address buyer,
-        uint256 numTokens
-    ) public returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
-        balances[owner] = balances[owner] - numTokens;
-        allowed[owner][msg.sender] = allowed[owner][msg.sender] - numTokens;
-        balances[buyer] = balances[buyer] + numTokens;
-        emit Transfer(owner, buyer, numTokens);
-        return true;
-    }
-}
-
-contract NTokens {
-    event Approval(
-        address indexed tokenOwner,
-        address indexed spender,
-        uint256 tokens
-    );
-    event Transfer(address indexed from, address indexed to, uint256 tokens);
-    string public name;
-    string public symbol;
-    uint8 public decimals;
-    uint256 totalSupply_;
-    mapping(address => uint256) public balances;
-    mapping(address => mapping(address => uint256)) public allowed;
-
-    constructor(uint256 total) {
-        totalSupply_ = total;
-        balances[msg.sender] = totalSupply_;
-    }
-
-    function totalSupply() public view returns (uint256) {
-        return totalSupply_;
-    }
-
-    function balanceOf(address tokenOwner) public view returns (uint256) {
-        return balances[tokenOwner];
-    }
-
-    function allowance(address tokenOwner, address spender)
-        public
-        view
-        returns (uint256)
-    {
-        return allowed[tokenOwner][spender];
-    }
-
-    function transfer(address receiver, uint256 numTokens)
-        public
-        returns (bool)
-    {
-        require(numTokens <= balances[msg.sender]);
-        balances[msg.sender] = balances[msg.sender] - numTokens;
-        balances[receiver] = balances[receiver] + numTokens;
-        emit Transfer(msg.sender, receiver, numTokens);
-        return true;
-    }
-
-    function approve(address delegate, uint256 numTokens)
-        public
-        returns (bool)
-    {
-        allowed[msg.sender][delegate] = numTokens;
-        emit Approval(msg.sender, delegate, numTokens);
-        return true;
-    }
-
-    function transferFrom(
-        address owner,
-        address buyer,
-        uint256 numTokens
-    ) public returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
-        balances[owner] = balances[owner] - numTokens;
-        allowed[owner][msg.sender] = allowed[owner][msg.sender] - numTokens;
-        balances[buyer] = balances[buyer] + numTokens;
-        emit Transfer(owner, buyer, numTokens);
-        return true;
-    }
 }

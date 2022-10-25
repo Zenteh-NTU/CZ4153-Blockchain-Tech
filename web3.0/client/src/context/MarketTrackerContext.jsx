@@ -72,7 +72,6 @@ export const MarketTrackerProvider = ({ children }) => {
             //testing if contract works
             const transactionHash = await marketTrackerContract.testFunction();
             console.log(transactionHash); //should return hello world
-
             const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
             alert("Transaction successful!");
             window.location.reload();
@@ -112,7 +111,12 @@ export const MarketTrackerProvider = ({ children }) => {
 
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
+                const buyYTokens = await marketContract.buyYTokens();
+                const buyNTokens = await marketContract.buyNTokens();
+                const sellYTokens = await marketContract.sellYTokens();
+                const sellNTokens = await marketContract.sellNTokens();
                 const resultDate = new Date(resultUNIXDate.toString() * 1000);
+
                 
                 marketList.push({
                     contractHash:contractHash, 
@@ -123,7 +127,11 @@ export const MarketTrackerProvider = ({ children }) => {
                     Y_Price: ethers.utils.formatEther(Y_Price), 
                     N_Price: ethers.utils.formatEther(N_Price), 
                     sides: sides, 
-                    resultDate: resultDate
+                    resultDate: resultDate,
+                    buyYTokens: buyYTokens,
+                    buyNTokens: buyNTokens,
+                    sellYTokens: sellYTokens,
+                    sellNTokens: sellNTokens
                 });
             }
             
