@@ -160,7 +160,7 @@ contract Market {
         address seller,
         uint256 amount,
         Transactions transaction
-    ) public payable {
+    ) public {
         marketTracker.pushToTransactionsArray(transaction);
         emit Transaction(buyer, seller, amount);
     }
@@ -204,8 +204,8 @@ contract Market {
         Transactions newTransaction = new Transactions(
             "Sell",
             amount,
-            msg.sender,
             address(this),
+            msg.sender,
             "",
             amountOfCoin
         );
@@ -223,8 +223,8 @@ contract Market {
         Transactions newTransaction = new Transactions(
             "Sell",
             amount,
-            msg.sender,
             address(this),
+            msg.sender,
             "",
             amountOfCoin
         );

@@ -20,26 +20,27 @@ export const getEthereumContract = (smartContractAddress, ABI) => {
     return marketTrackerContract;
 }
 
-export const tradeTokens = async (string, contract, data, price) => {
+export const tradeTokens = async (string, contract, howMany, price) => {
     const market = getEthereumContract(contract, marketContractABI);
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const oracleAddress = market.getOwnerAddress();
-    const amount = data * price;
+    console.log(typeof oracleAddress);
+    const amount = howMany * price;
     console.log(market);
-    console.log(data);
+    console.log(howMany);
     if (string === "buyY") {
+        market.buyYToken(howMany);
         const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
-        market.buyYToken(data);
     } else if (string === "sellY") {
+        market.sellYToken(howMany);
         const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
-        market.sellYToken(data);
     } else if (string === "buyN") {
+        market.buyNToken(howMany);
         const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
-        market.buyNToken(data);
     } else {
+        market.sellNToken(howMany);
         const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
-        market.sellNToken(data);
     }
 }
 
@@ -124,6 +125,9 @@ export const MarketTrackerProvider = ({ children }) => {
             for(var i=0; i<marketHashArray.length; i++){
                 const contractHash = marketHashArray[i];
                 const marketContract = getEthereumContract(contractHash, marketContractABI);
+                const getUserYToken = await marketContract.getUserYTokens();
+                console.log(getUserYToken);
+                const getUserNToken = await marketContract.getUserNTokens();
                 const ownerHash = await marketContract.getOwnerAddress();
                 const marketName = await marketContract.getMarketName();
 
@@ -146,7 +150,9 @@ export const MarketTrackerProvider = ({ children }) => {
                     Y_Price: ethers.utils.formatEther(Y_Price), 
                     N_Price: ethers.utils.formatEther(N_Price), 
                     sides: sides, 
-                    resultDate: resultDate
+                    resultDate: resultDate,
+                    getUserYToken: getUserYToken,
+                    getUserNToken: getUserNToken
                 });
             }
             
