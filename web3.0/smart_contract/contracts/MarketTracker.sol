@@ -167,7 +167,10 @@ contract Market {
 
     function buyYToken(uint256 amountOfCoin) public payable {
         uint256 amount = amountOfCoin * currentYPrice;
-        require(msg.value == amount, "You need to pass in the correct amount of ether");
+        require(
+            msg.value == amount,
+            "You need to pass in the correct amount of ether"
+        );
         Transactions newTransaction = new Transactions(
             "Buy",
             amount,
@@ -216,6 +219,7 @@ contract Market {
             "",
             amountOfCoin
         );
+        payable(msg.sender).transfer(amount);
         Y_Tokens -= amountOfCoin;
         tokensPerGambler[msg.sender][1] -= amountOfCoin;
         MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
@@ -238,6 +242,7 @@ contract Market {
             "",
             amountOfCoin
         );
+        payable(msg.sender).transfer(amount);
         N_Tokens -= amountOfCoin;
         tokensPerGambler[msg.sender][0] -= amountOfCoin;
         MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
@@ -288,6 +293,10 @@ contract Market {
 
     function getUserNTokens() public view returns (uint256) {
         return tokensPerGambler[msg.sender][0];
+    }
+
+    function getContractBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
     // function getOwnerBetAmount() public view returns (uint[2] memory){

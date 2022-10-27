@@ -101,6 +101,10 @@ const MarketDetail = () => {
                 </div>
 
                 <div className=" mt-6 w-full p-5 bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg grid grid-cols-0 justify-between">
+                    <div>
+                        <h1 className='text-4xl text-white sm:text-2xl'>Prize Pool: { currentMarket.contractBalance }</h1>
+                    </div>
+                    <br/>
                     <h1 className="text-4xl text-white sm:text-2xl">Buy and Sell</h1>
                     <div className="mt-16 w-11/12 p-5 bg-sky-900 max-h-full rounded overflow-hidden shadow-lg col-start-1">
                         <h1 className="text-4xl text-white bg sm:text-2xl">Y-Token</h1>

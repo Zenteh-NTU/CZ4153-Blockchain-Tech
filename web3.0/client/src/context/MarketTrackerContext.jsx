@@ -91,7 +91,6 @@ export const MarketTrackerProvider = ({ children }) => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const oracleAddress = market.getOwnerAddress();
-        console.log(typeof oracleAddress);
         const Y_amount =  currentMarket.Y_Price_wei.mul(howMany);
         const N_amount =  currentMarket.N_Price_wei.mul(howMany);
         if (string === "buyY") {
@@ -103,7 +102,7 @@ export const MarketTrackerProvider = ({ children }) => {
             //const createMarketTransactionHash = await market.addNewMarket.buyYToken()(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
         } else if (string === "sellY") {
             if(howMany <= currentMarket.UserYToken){
-                const tokenHash = await market.sellYToken(howMany, { value: Y_amount});
+                const tokenHash = await market.sellYToken(howMany);
                 const receipt = await tokenHash.wait();
                 console.log("receipt:",receipt);
                 if (receipt) alert("Transaction Complete!");
@@ -122,7 +121,7 @@ export const MarketTrackerProvider = ({ children }) => {
             //market.sellNToken(howMany);
             //const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
             if(howMany <= currentMarket.UserNToken){
-                const tokenHash = await market.sellNToken(howMany, { value: N_amount});
+                const tokenHash = await market.sellNToken(howMany);
                 const receipt = await tokenHash.wait();
                 console.log("receipt:",receipt);
                 if (receipt) alert("Transaction Complete!");
@@ -150,6 +149,7 @@ export const MarketTrackerProvider = ({ children }) => {
         const getUserYToken = await marketContract.getUserYTokens();
         const Y_Price = await marketContract.getYPrice();
         const N_Price = await marketContract.getNPrice();
+        const contractBalance = await marketContract.getContractBalance();
 
         const sides = await marketContract.getSide();
         const resultUNIXDate = await marketContract.getResultDate();
@@ -168,7 +168,8 @@ export const MarketTrackerProvider = ({ children }) => {
             sides: sides, 
             resultDate: resultDate,
             UserYToken: parseInt(getUserYToken),
-            UserNToken: parseInt(getUserNToken)
+            UserNToken: parseInt(getUserNToken),
+            contractBalance: ethers.utils.formatEther(contractBalance)
         }
         setCurrentMarket(marketObj);
         return marketObj;
