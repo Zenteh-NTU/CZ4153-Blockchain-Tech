@@ -30,17 +30,19 @@ export const tradeTokens = async (string, contract, howMany, price) => {
     console.log(market);
     console.log(howMany);
     if (string === "buyY") {
-        market.buyYToken(howMany);
-        const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
+        const tokenHash = await market.buyYToken(howMany, { value: ethers.utils.parseEther(amount.toString())});
+        //const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
+        //const createMarketTransactionHash = await market.addNewMarket.buyYToken()(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
     } else if (string === "sellY") {
-        market.sellYToken(howMany);
-        const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
+        const tokenHash = await market.sellYToken(howMany, { value: ethers.utils.parseEther(amount.toString())});
+        //const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
     } else if (string === "buyN") {
-        market.buyNToken(howMany);
-        const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
+        const tokenHash = await market.buyNToken(howMany, { value: ethers.utils.parseEther(amount.toString())});
+        //const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
     } else {
-        market.sellNToken(howMany);
-        const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
+        const tokenHash = await market.sellNToken(howMany, { value: ethers.utils.parseEther(amount.toString())});
+        //market.sellNToken(howMany);
+        //const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
     }
 }
 
@@ -125,9 +127,9 @@ export const MarketTrackerProvider = ({ children }) => {
             for(var i=0; i<marketHashArray.length; i++){
                 const contractHash = marketHashArray[i];
                 const marketContract = getEthereumContract(contractHash, marketContractABI);
-                const getUserYToken = await marketContract.getUserYTokens();
-                console.log(getUserYToken);
-                const getUserNToken = await marketContract.getUserNTokens();
+                // const getUserYToken = await marketContract.getUserYTokens();
+                // console.log(getUserYToken);
+                // const getUserNToken = await marketContract.getUserNTokens();
                 const ownerHash = await marketContract.getOwnerAddress();
                 const marketName = await marketContract.getMarketName();
 
@@ -151,8 +153,6 @@ export const MarketTrackerProvider = ({ children }) => {
                     N_Price: ethers.utils.formatEther(N_Price), 
                     sides: sides, 
                     resultDate: resultDate,
-                    getUserYToken: getUserYToken,
-                    getUserNToken: getUserNToken
                 });
             }
             

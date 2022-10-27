@@ -167,6 +167,7 @@ contract Market {
 
     function buyYToken(uint256 amountOfCoin) public payable {
         uint256 amount = amountOfCoin * currentYPrice;
+        require(msg.value == amount, "You need to pass in the correct amount of ether");
         Transactions newTransaction = new Transactions(
             "Buy",
             amount,
@@ -177,7 +178,8 @@ contract Market {
         );
         Y_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][1] += amountOfCoin;
-        addTransactions(msg.sender, address(this), amount, newTransaction);
+        MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        //addTransactions(msg.sender, address(this), amount, newTransaction);
     }
 
     function buyNToken(uint256 amountOfCoin) public payable {
@@ -192,7 +194,8 @@ contract Market {
         );
         N_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][0] += amountOfCoin;
-        addTransactions(msg.sender, address(this), amount, newTransaction);
+        MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        //addTransactions(msg.sender, address(this), amount, newTransaction);
     }
 
     function sellYToken(uint256 amountOfCoin) public payable {
@@ -211,7 +214,8 @@ contract Market {
         );
         Y_Tokens -= amountOfCoin;
         tokensPerGambler[msg.sender][1] -= amountOfCoin;
-        addTransactions(address(this), msg.sender, amount, newTransaction);
+        MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        //addTransactions(address(this), msg.sender, amount, newTransaction);
     }
 
     function sellNToken(uint256 amountOfCoin) public payable {
@@ -230,7 +234,8 @@ contract Market {
         );
         N_Tokens -= amountOfCoin;
         tokensPerGambler[msg.sender][0] -= amountOfCoin;
-        addTransactions(address(this), msg.sender, amount, newTransaction);
+        MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        //addTransactions(address(this), msg.sender, amount, newTransaction);
     }
 
     function getMarketName() public view returns (string memory) {
