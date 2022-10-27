@@ -179,6 +179,8 @@ contract Market {
         Y_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][1] += amountOfCoin;
         MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        currentYPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (Y_Tokens + 1);
+        currentNPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (N_Tokens + 1);
         //addTransactions(msg.sender, address(this), amount, newTransaction);
     }
 
@@ -195,6 +197,8 @@ contract Market {
         N_Tokens += amountOfCoin;
         tokensPerGambler[msg.sender][0] += amountOfCoin;
         MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        currentYPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (Y_Tokens + 1);
+        currentNPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (N_Tokens + 1);
         //addTransactions(msg.sender, address(this), amount, newTransaction);
     }
 
@@ -215,6 +219,8 @@ contract Market {
         Y_Tokens -= amountOfCoin;
         tokensPerGambler[msg.sender][1] -= amountOfCoin;
         MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        currentYPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (Y_Tokens + 1);
+        currentNPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (N_Tokens + 1);
         //addTransactions(address(this), msg.sender, amount, newTransaction);
     }
 
@@ -235,6 +241,8 @@ contract Market {
         N_Tokens -= amountOfCoin;
         tokensPerGambler[msg.sender][0] -= amountOfCoin;
         MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
+        currentYPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (Y_Tokens + 1);
+        currentNPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (N_Tokens + 1);
         //addTransactions(address(this), msg.sender, amount, newTransaction);
     }
 
@@ -259,7 +267,7 @@ contract Market {
     }
 
     function getNPrice() public view returns (uint256) {
-        return currentYPrice;
+        return currentNPrice;
     }
 
     function getResultDate() public view returns (uint256) {

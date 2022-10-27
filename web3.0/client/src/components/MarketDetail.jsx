@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { MarketTrackerContext, tradeTokens } from '../context/MarketTrackerContext';
+import { MarketTrackerContext } from '../context/MarketTrackerContext';
 
 const Input = ({ placeholder, name, type, value, className, handleChange }) => (
     <input
@@ -12,7 +12,7 @@ const Input = ({ placeholder, name, type, value, className, handleChange }) => (
   );
 
 const MarketDetail = () => {
-    const { currentMarket } = useContext(MarketTrackerContext);
+    const { currentMarket, tradeTokens } = useContext(MarketTrackerContext);
     const [ value1, setValue1 ] = useState('');
     const [ value2, setValue2 ] = useState('');
     const [ value3, setValue3 ] = useState('');
@@ -104,7 +104,7 @@ const MarketDetail = () => {
                     <h1 className="text-4xl text-white sm:text-2xl">Buy and Sell</h1>
                     <div className="mt-16 w-11/12 p-5 bg-sky-900 max-h-full rounded overflow-hidden shadow-lg col-start-1">
                         <h1 className="text-4xl text-white bg sm:text-2xl">Y-Token</h1>
-                        <p className="font-mono pt-3 text-xl text-white">You own: {  } Y-Tokens</p>
+                        <p className="font-mono pt-3 text-xl text-white">You own: { currentMarket.UserYToken } Y-Tokens</p>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to buy..</h1>
                         <div className='flexalign-middle'>
                             <Input name="YTokenAmt" handleChange={ handleChange1 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of Y-tokens..." type="text" id="buyY" />
@@ -127,7 +127,7 @@ const MarketDetail = () => {
                     </div>
                     <div className="mt-16 w-11/12 p-5 bg-red-900 max-h-full rounded overflow-hidden shadow-lg col-start-13">
                         <h1 className="text-4xl text-white sm:text-2xl">N-Token</h1>
-                        <p className="font-mono pt-3 text-xl text-white">You own: {  } N-Tokens</p>
+                        <p className="font-mono pt-3 text-xl text-white">You own: { currentMarket.UserNToken } N-Tokens</p>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to buy..</h1>
                         <div className='flexalign-middle'>
                             <Input name="YTokenAmt" handleChange={ handleChange3 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of N-tokens..." type="text" id="buyN" />
