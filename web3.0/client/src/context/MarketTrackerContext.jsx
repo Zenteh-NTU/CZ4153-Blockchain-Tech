@@ -98,6 +98,8 @@ export const MarketTrackerProvider = ({ children }) => {
             const receipt = await tokenHash.wait();
             console.log("receipt:",receipt);
             if (receipt) alert("Transaction Complete!");
+            const balance = (parseFloat(currentBalance) - (currentMarket.Y_Price*howMany)).toString();
+            setCurrentBalance(balance);
             //const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
             //const createMarketTransactionHash = await market.addNewMarket.buyYToken()(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
         } else if (string === "sellY") {
@@ -106,16 +108,19 @@ export const MarketTrackerProvider = ({ children }) => {
                 const receipt = await tokenHash.wait();
                 console.log("receipt:",receipt);
                 if (receipt) alert("Transaction Complete!");
+                const balance = (parseFloat(currentBalance) + (currentMarket.Y_Price*howMany)).toString();
+                setCurrentBalance(balance);
             }else{
                 alert("You cannot sell more than the amount of tokens you own");
             }
-    
             //const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
         } else if (string === "buyN") {
             const tokenHash = await market.buyNToken(howMany, { value: N_amount});
             const receipt = await tokenHash.wait();
             console.log("receipt:",receipt);
             if (receipt) alert("Transaction Complete!");
+            const balance = (parseFloat(currentBalance) - (currentMarket.N_Price*howMany)).toString()
+            setCurrentBalance(balance);
             //const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
         } else {
             //market.sellNToken(howMany);
@@ -125,6 +130,8 @@ export const MarketTrackerProvider = ({ children }) => {
                 const receipt = await tokenHash.wait();
                 console.log("receipt:",receipt);
                 if (receipt) alert("Transaction Complete!");
+                const balance = (parseFloat(currentBalance) + (currentMarket.N_Price*howMany)).toString()
+                setCurrentBalance(balance);
             }else{
                 alert("You cannot sell more than the amount of tokens you own");
             }
@@ -198,6 +205,7 @@ export const MarketTrackerProvider = ({ children }) => {
                 const getUserYToken = await marketContract.getUserYTokens();
                 const Y_Price = await marketContract.getYPrice();
                 const N_Price = await marketContract.getNPrice();
+                const contractBalance = await marketContract.getContractBalance();
 
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
@@ -216,7 +224,8 @@ export const MarketTrackerProvider = ({ children }) => {
                     sides: sides, 
                     resultDate: resultDate,
                     UserYToken: parseInt(getUserYToken),
-                    UserNToken: parseInt(getUserNToken)
+                    UserNToken: parseInt(getUserNToken),
+                    contractBalance: ethers.utils.formatEther(contractBalance)
                 });
             }
             

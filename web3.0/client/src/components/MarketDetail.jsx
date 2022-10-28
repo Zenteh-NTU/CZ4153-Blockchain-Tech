@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { MarketTrackerContext } from '../context/MarketTrackerContext';
 
 const Input = ({ placeholder, name, type, value, className, handleChange }) => (
@@ -58,6 +58,15 @@ const MarketDetail = () => {
             alert("Please enter a value, e.g 123");
         } else {
             value = parseInt(value);
+            if (string === "buyY") {
+                setValue1('');
+            } else if (string === "sellY") {
+                setValue2('');
+            } else if (string === "buyN") {
+                setValue3('');
+            } else {
+                setValue4('');
+            }
             tradeTokens(string, contract, value, price);
         }
     }
@@ -102,7 +111,7 @@ const MarketDetail = () => {
 
                 <div className=" mt-6 w-full p-5 bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg grid grid-cols-0 justify-between">
                     <div>
-                        <h1 className='text-4xl text-white sm:text-2xl'>Prize Pool: { currentMarket.contractBalance }</h1>
+                        <h1 className='text-4xl text-white sm:text-2xl'>Prize Pool: { (parseFloat(currentMarket.contractBalance).toFixed(3)).toString() } ETH</h1>
                     </div>
                     <br/>
                     <h1 className="text-4xl text-white sm:text-2xl">Buy and Sell</h1>
@@ -111,7 +120,7 @@ const MarketDetail = () => {
                         <p className="font-mono pt-3 text-xl text-white">You own: { currentMarket.UserYToken } Y-Tokens</p>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to buy..</h1>
                         <div className='flexalign-middle'>
-                            <Input name="YTokenAmt" handleChange={ handleChange1 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of Y-tokens..." type="text" id="buyY" />
+                            <Input name="YTokenAmt" handleChange={ handleChange1 } value={ value1 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of Y-tokens..." type="text" id="buyY" />
                             <span className='text-xl pt-3 text-white '> Y-Token(s)</span>
                             <p className=" font-mono pt-3 text-white">Price of Y-Token <span className=' text-blue-300'>(Option:{currentMarket.sides[1]})</span>: {currentMarket.Y_Price} ETH each</p>
                             <p className=" font-mono text-white">Quanity to buy: { value1 }</p>
@@ -121,7 +130,7 @@ const MarketDetail = () => {
                         <hr></hr>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to sell..</h1>
                         <div className='flexalign-middle'>
-                            <Input name="YTokenAmt" handleChange={ handleChange2 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of Y-tokens..." type="text" id="sellY" />
+                            <Input name="YTokenAmt" handleChange={ handleChange2 } value={ value2 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of Y-tokens..." type="text" id="sellY" />
                             <span className='text-xl pt-3 text-white '> Y-Token(s)</span>
 
                             <p className=" font-mono pt-3 text-white">Price of Y-Token <span className=' text-blue-300'>(Option:{currentMarket.sides[1]})</span>: {currentMarket.Y_Price} ETH each</p>
@@ -134,7 +143,7 @@ const MarketDetail = () => {
                         <p className="font-mono pt-3 text-xl text-white">You own: { currentMarket.UserNToken } N-Tokens</p>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to buy..</h1>
                         <div className='flexalign-middle'>
-                            <Input name="YTokenAmt" handleChange={ handleChange3 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of N-tokens..." type="text" id="buyN" />
+                            <Input name="YTokenAmt" handleChange={ handleChange3 } value={ value3 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of N-tokens..." type="text" id="buyN" />
                             <span className='text-xl pt-3 text-white '> N-Token(s)</span>
 
                             <p className=" font-mono pt-3 text-white">Price of N-Token <span className=' text-red-400'>(Option:{currentMarket.sides[0]})</span>: {currentMarket.N_Price} ETH each</p>
@@ -145,7 +154,7 @@ const MarketDetail = () => {
                         <hr></hr>
                         <h1 className="text-xl pt-3 text-white bg sm:text-xl">I want to sell..</h1>
                         <div className='flexalign-middle'>
-                            <Input name="YTokenAmt" handleChange={ handleChange4 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of N-tokens..." type="text" id="sellN" />
+                            <Input name="YTokenAmt" handleChange={ handleChange4 } value={ value4 } className=" w-auto bg-transparent text-xl pt-3 text-white placeholder:font-normal placeholder:italic placeholder:text-blue-400" placeholder="Enter the number of N-tokens..." type="text" id="sellN" />
                             <span className='text-xl pt-3 text-white '> N-Token(s)</span>
 
                             <p className=" font-mono pt-3 text-white">Price of N-Token <span className=' text-red-400'>(Option:{currentMarket.sides[0]})</span>: {currentMarket.N_Price} ETH each</p>
