@@ -146,13 +146,19 @@ export const MarketTrackerProvider = ({ children }) => {
 
     const setWinningBets = async (winner, loser, contract) => {
         const market = getEthereumContract(contract, marketContractABI);
-        const winningBetStr = await market.getWinningBet();
         const tokenHash = await market.setWinningBet(winner, loser);
+        // const winningBetStr = await market.getWinningBet();
         const receipt = await tokenHash.wait();
         console.log("receipt:",receipt);
         if (receipt) alert("Transaction Complete!");
-        console.log(winningBetStr);
-        setWinning(winningBetStr);
+        // setWinning(winningBetStr);
+        if (winner == 1) {
+            currentMarket.Y_Price = "1";
+            currentMarket.N_Price = "0";
+        } else if (winner == 0) {
+            currentMarket.Y_Price = "0";
+            currentMarket.N_Price = "1";
+        }
     }
 
     const collectClaims = async (contract) => {
@@ -160,7 +166,23 @@ export const MarketTrackerProvider = ({ children }) => {
         const tokenHash = await market.withdrawGains();
         const receipt = await tokenHash.wait();
         console.log("receipt:",receipt);
+        const winner = await market.getWinner();
+        const winningsPerTokenWei = await market.getWinningsPerToken();
+        console.log(winningsPerTokenWei);
+        const winningsPerToken = ethers.utils.formatEther(winningsPerTokenWei);
         if (receipt) alert("Transaction Complete!");
+        console.log(winner);
+        if (winner == 1) {
+            const balance = (parseFloat(currentBalance) + (currentMarket.UserYToken * parseFloat(winningsPerToken))).toString();
+            setCurrentBalance(balance);
+            currentMarket.contractBalance = (parseFloat(currentMarket.contractBalance) - (currentMarket.UserYToken * parseFloat(winningsPerToken))).toString();
+        } else if (winner == 0) {
+            const balance = (parseFloat(currentBalance) + (currentMarket.UserNToken * parseFloat(winningsPerToken))).toString();
+            setCurrentBalance(balance);
+            currentMarket.contractBalance = (parseFloat(currentMarket.contractBalance) - (currentMarket.UserNToken * parseFloat(winningsPerToken))).toString();
+        }
+        currentMarket.UserYToken = 0;
+        currentMarket.UserNToken = 0;
     } 
 
 
@@ -176,10 +198,12 @@ export const MarketTrackerProvider = ({ children }) => {
         const getUserYToken = await marketContract.getUserYTokens();
         const Y_Price = await marketContract.getYPrice();
         const N_Price = await marketContract.getNPrice();
-        const WinningBet = await marketContract.getWinningBet();
         const sides = await marketContract.getSide();
         const resultUNIXDate = await marketContract.getResultDate();
         const resultDate = new Date(resultUNIXDate.toString() * 1000);
+        const contractBalance = await marketContract.getContractBalance();
+        const winner = await marketContract.getWinner();
+        const winningsPerToken = await marketContract.getWinningsPerToken();
         
         const marketObj = {
             contractHash:contractHash, 
@@ -195,7 +219,8 @@ export const MarketTrackerProvider = ({ children }) => {
             resultDate: resultDate,
             UserYToken: parseInt(getUserYToken),
             UserNToken: parseInt(getUserNToken),
-            WinningBet: WinningBet
+            contractBalance: ethers.utils.formatEther(contractBalance),
+            winner: winner
         }
         setCurrentMarket(marketObj);
         return marketObj;
@@ -217,7 +242,7 @@ export const MarketTrackerProvider = ({ children }) => {
                 const marketContract = getEthereumContract(contractHash, marketContractABI);
                 const ownerHash = await marketContract.getOwnerAddress();
                 const marketName = await marketContract.getMarketName();
-
+                
                 const Y_Tokens = await marketContract.getYTokens();
                 const N_Tokens = await marketContract.getNTokens();
                 const getUserNToken = await marketContract.getUserNTokens();
@@ -225,7 +250,6 @@ export const MarketTrackerProvider = ({ children }) => {
                 const Y_Price = await marketContract.getYPrice();
                 const N_Price = await marketContract.getNPrice();
                 const contractBalance = await marketContract.getContractBalance();
-                const WinningBet = await marketContract.getWinningBet();
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
                 const resultDate = new Date(resultUNIXDate.toString() * 1000);
@@ -244,8 +268,7 @@ export const MarketTrackerProvider = ({ children }) => {
                     resultDate: resultDate,
                     UserYToken: parseInt(getUserYToken),
                     UserNToken: parseInt(getUserNToken),
-                    contractBalance: ethers.utils.formatEther(contractBalance),
-                    WinningBet: WinningBet
+                    contractBalance: ethers.utils.formatEther(contractBalance)
                 });
             }
             
