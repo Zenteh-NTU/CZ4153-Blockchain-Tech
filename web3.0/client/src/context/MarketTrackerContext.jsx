@@ -33,6 +33,7 @@ export const MarketTrackerProvider = ({ children }) => {
     const [listOfMarkets, setListOfMarkets] = useState([]);
     const [currentMarket, setCurrentMarket] = useState({});
     const [formData, setFormData] = useState({marketTitle: '', YTokenName: '', NTokenName:'', resultDay: ''});
+    const [winning, setWinning] = useState(currentMarket.WinningBet);
 
     const handleChange = (e, name) => {
         setFormData((prevState) => ({ ...prevState, [name]: e.target.value}));
@@ -94,43 +95,43 @@ export const MarketTrackerProvider = ({ children }) => {
         const Y_amount =  currentMarket.Y_Price_wei.mul(howMany);
         const N_amount =  currentMarket.N_Price_wei.mul(howMany);
         if (string === "buyY") {
+            const balance = (parseFloat(currentBalance) - (currentMarket.Y_Price*howMany)).toString();
             const tokenHash = await market.buyYToken(howMany, { value: Y_amount });
             const receipt = await tokenHash.wait();
             console.log("receipt:",receipt);
             if (receipt) alert("Transaction Complete!");
-            const balance = (parseFloat(currentBalance) - (currentMarket.Y_Price*howMany)).toString();
             setCurrentBalance(balance);
             //const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
             //const createMarketTransactionHash = await market.addNewMarket.buyYToken()(marketTitle, [NTokenName, YTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
         } else if (string === "sellY") {
             if(howMany <= currentMarket.UserYToken){
+                const balance = (parseFloat(currentBalance) + (currentMarket.Y_Price*howMany)).toString();
                 const tokenHash = await market.sellYToken(howMany);
                 const receipt = await tokenHash.wait();
                 console.log("receipt:",receipt);
                 if (receipt) alert("Transaction Complete!");
-                const balance = (parseFloat(currentBalance) + (currentMarket.Y_Price*howMany)).toString();
                 setCurrentBalance(balance);
             }else{
                 alert("You cannot sell more than the amount of tokens you own");
             }
             //const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
         } else if (string === "buyN") {
+            const balance = (parseFloat(currentBalance) - (currentMarket.N_Price*howMany)).toString();
             const tokenHash = await market.buyNToken(howMany, { value: N_amount});
             const receipt = await tokenHash.wait();
             console.log("receipt:",receipt);
             if (receipt) alert("Transaction Complete!");
-            const balance = (parseFloat(currentBalance) - (currentMarket.N_Price*howMany)).toString()
             setCurrentBalance(balance);
             //const transaction = await signer.sendTransaction({from: signer.getAddress(), to: oracleAddress, value: ethers.utils.parseEther(amount.toString())})
         } else {
             //market.sellNToken(howMany);
             //const transaction = await signer.sendTransaction({from: oracleAddress, to: signer.getAddress(), value: ethers.utils.parseEther(amount.toString())})
             if(howMany <= currentMarket.UserNToken){
+                const balance = (parseFloat(currentBalance) + (currentMarket.N_Price*howMany)).toString();
                 const tokenHash = await market.sellNToken(howMany);
                 const receipt = await tokenHash.wait();
                 console.log("receipt:",receipt);
                 if (receipt) alert("Transaction Complete!");
-                const balance = (parseFloat(currentBalance) + (currentMarket.N_Price*howMany)).toString()
                 setCurrentBalance(balance);
             }else{
                 alert("You cannot sell more than the amount of tokens you own");
@@ -142,6 +143,25 @@ export const MarketTrackerProvider = ({ children }) => {
         const newMarket = await setMarketVariables(currentMarket.contractHash);
         console.log(newMarket);
     }
+
+    const setWinningBets = async (winner, loser, contract) => {
+        const market = getEthereumContract(contract, marketContractABI);
+        const winningBetStr = await market.getWinningBet();
+        const tokenHash = await market.setWinningBet(winner, loser);
+        const receipt = await tokenHash.wait();
+        console.log("receipt:",receipt);
+        if (receipt) alert("Transaction Complete!");
+        console.log(winningBetStr);
+        setWinning(winningBetStr);
+    }
+
+    const collectClaims = async (contract) => {
+        const market = getEthereumContract(contract, marketContractABI);
+        const tokenHash = await market.withdrawGains();
+        const receipt = await tokenHash.wait();
+        console.log("receipt:",receipt);
+        if (receipt) alert("Transaction Complete!");
+    } 
 
 
     const setMarketVariables = async (marketContractHash) => {
@@ -156,8 +176,7 @@ export const MarketTrackerProvider = ({ children }) => {
         const getUserYToken = await marketContract.getUserYTokens();
         const Y_Price = await marketContract.getYPrice();
         const N_Price = await marketContract.getNPrice();
-        const contractBalance = await marketContract.getContractBalance();
-
+        const WinningBet = await marketContract.getWinningBet();
         const sides = await marketContract.getSide();
         const resultUNIXDate = await marketContract.getResultDate();
         const resultDate = new Date(resultUNIXDate.toString() * 1000);
@@ -176,7 +195,7 @@ export const MarketTrackerProvider = ({ children }) => {
             resultDate: resultDate,
             UserYToken: parseInt(getUserYToken),
             UserNToken: parseInt(getUserNToken),
-            contractBalance: ethers.utils.formatEther(contractBalance)
+            WinningBet: WinningBet
         }
         setCurrentMarket(marketObj);
         return marketObj;
@@ -206,7 +225,7 @@ export const MarketTrackerProvider = ({ children }) => {
                 const Y_Price = await marketContract.getYPrice();
                 const N_Price = await marketContract.getNPrice();
                 const contractBalance = await marketContract.getContractBalance();
-
+                const WinningBet = await marketContract.getWinningBet();
                 const sides = await marketContract.getSide();
                 const resultUNIXDate = await marketContract.getResultDate();
                 const resultDate = new Date(resultUNIXDate.toString() * 1000);
@@ -225,7 +244,8 @@ export const MarketTrackerProvider = ({ children }) => {
                     resultDate: resultDate,
                     UserYToken: parseInt(getUserYToken),
                     UserNToken: parseInt(getUserNToken),
-                    contractBalance: ethers.utils.formatEther(contractBalance)
+                    contractBalance: ethers.utils.formatEther(contractBalance),
+                    WinningBet: WinningBet
                 });
             }
             
@@ -262,7 +282,7 @@ export const MarketTrackerProvider = ({ children }) => {
     }, []);
 
     return (
-        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, currentMarket, createNewMarket, setCurrentMarket, tradeTokens, setFormData, fetchAllMarkets, handleChange}}>
+        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, currentMarket, winning, createNewMarket, setCurrentMarket, tradeTokens, setWinningBets, collectClaims, setFormData, fetchAllMarkets, handleChange}}>
             {children}
         </MarketTrackerContext.Provider>
     )

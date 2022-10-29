@@ -129,10 +129,13 @@ contract Market {
     uint256 public Y_Tokens;
     uint256 public N_Tokens;
     uint256 public resultDate;
-
     uint256 public currentYPrice;
     uint256 public currentNPrice;
     uint256 public maxPrice = 1e18;
+    uint8 public winner;
+    uint8 public loser;
+    bool public oracleDecided;
+    string public winningBet;
 
     event Transaction(address buyer, address seller, uint256 amount);
     MarketTracker marketTracker;
@@ -153,6 +156,7 @@ contract Market {
         resultDate = _resultDate;
         currentYPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (Y_Tokens + 1);
         currentNPrice = (maxPrice / (Y_Tokens + N_Tokens + 2)) * (N_Tokens + 1);
+        oracleDecided = false;
     }
 
     function addTransactions(
@@ -297,6 +301,42 @@ contract Market {
 
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    function withdrawGains() public payable {
+        uint256 gamblerBet = tokensPerGambler[msg.sender][winner];
+        require(gamblerBet > 0, "You do not have any winning bet");
+        require(oracleDecided == true, "Bet have not finished yet");
+
+        if (winner == 0) {
+            uint256 gain = gamblerBet * (address(this).balance / N_Tokens);
+            payable(msg.sender).transfer(gain);
+            currentNPrice = 1e18;
+            currentYPrice = 0;
+        } else if (winner == 1) {
+            uint256 gain = gamblerBet * (address(this).balance / Y_Tokens);
+            payable(msg.sender).transfer(gain);
+            currentYPrice = 1e18;
+            currentNPrice = 0;
+        }
+        tokensPerGambler[msg.sender][0] = 0;
+        tokensPerGambler[msg.sender][1] = 0;
+        getUserYTokens();
+        getUserNTokens();
+        Y_Tokens = 0;
+        N_Tokens = 0;
+    }
+
+    function setWinningBet(uint8 _winner, uint8 _loser) public {
+        require(msg.sender == owner, "You do not have access to this function");
+        winner = _winner;
+        loser = _loser;
+        oracleDecided = true;
+        winningBet = Side[winner];
+    }
+
+    function getWinningBet() public view returns (string memory) {
+        return winningBet;
     }
 
     // function getOwnerBetAmount() public view returns (uint[2] memory){
