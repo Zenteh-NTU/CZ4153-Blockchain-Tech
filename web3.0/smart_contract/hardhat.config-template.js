@@ -4,13 +4,24 @@
 require("@nomicfoundation/hardhat-toolbox");
 
 /** @type import('hardhat/config').HardhatUserConfig */
+require("@nomicfoundation/hardhat-toolbox");
+
+/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.0",
+  solidity: { 
+    version: "0.8.0", 
+    settings: { 
+      optimizer: { 
+        enabled: true, 
+        runs: 1 
+      } 
+    }
+  },
   networks:{
     ganache: {
       url: 'HTTP://127.0.0.1:7545',
       chainId: 1337,
-      accounts: ['ENTER YOUR PRIVATE KEY HERE']
+      accounts: ['YOUR PRIVATE KEY']
     }
   }
 };
