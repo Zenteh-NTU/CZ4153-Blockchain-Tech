@@ -113,11 +113,11 @@ const MarketDetail = () => {
           <div className="w-full h-10 flex justify-between">
             <div className=" text-blue-400 text-3xl w-fit">
               {currentMarket.sides[1]} -{" "}
-              {percentageCal(currentMarket.Y_Tokens, currentMarket.N_Tokens)}%
+              {parseFloat(percentageCal(currentMarket.Y_Tokens, currentMarket.N_Tokens)).toFixed(2)}%
             </div>
             <div className="w-fit text-right text-3xl text-red-500">
               {currentMarket.sides[0]} -{" "}
-              {percentageCal(currentMarket.N_Tokens, currentMarket.Y_Tokens)}%
+              {parseFloat(percentageCal(currentMarket.N_Tokens, currentMarket.Y_Tokens)).toFixed(2)}%
             </div>
           </div>
           <div className=" w-full bg-red-500 h-5">
