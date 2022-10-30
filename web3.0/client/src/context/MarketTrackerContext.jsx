@@ -29,6 +29,7 @@ export const MarketTrackerProvider = ({ children }) => {
     }
     const provider = new ethers.providers.Web3Provider(ethereum);
     const [currentAccount, setCurrentAccount] = useState('');
+    const [isStaff, setIsStaff] = useState(false);
     const [currentBalance, setCurrentBalance] = useState('');
     const [listOfMarkets, setListOfMarkets] = useState([]);
     const [currentMarket, setCurrentMarket] = useState({});
@@ -270,11 +271,10 @@ export const MarketTrackerProvider = ({ children }) => {
                     UserNToken: parseInt(getUserNToken),
                     contractBalance: ethers.utils.formatEther(contractBalance)
                 });
+
             }
-            
             console.log(marketList);
             setListOfMarkets(marketList);
-            
             //should return hello world
             //const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [YTokenName, NTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
             //console.log(createMarketTransactionHash); //convert to unix time
@@ -282,6 +282,32 @@ export const MarketTrackerProvider = ({ children }) => {
         }catch (error){
             console.log(error);
             throw new Error("No ethereum object.");
+        }
+    }
+
+    const checkIfStaff = async () => {
+        
+
+        try{
+            if(!ethereum) return alert("Please install metamask!");
+            //get contract
+            console.log('Checking if you are staff');
+            //get contract
+            const marketTrackerContract = getEthereumContract(contractAddress, marketTrackerContractABI);
+            const staffChecker = await marketTrackerContract.checkPermission();
+            console.log("Staff?:",(staffChecker == true));
+            if((staffChecker == true)){
+                setIsStaff(true);
+                return true;
+            }else{
+                setIsStaff(false);
+                return false;
+            }
+            return false;
+        }catch (error){
+            console.log(error);
+            return false;
+            
         }
     }
 
@@ -302,10 +328,11 @@ export const MarketTrackerProvider = ({ children }) => {
         console.log("state updated");
         checkIfWalletIsConnected();
         fetchAllMarkets();
+        checkIfStaff();
     }, []);
 
     return (
-        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, currentMarket, winning, createNewMarket, setCurrentMarket, tradeTokens, setWinningBets, collectClaims, setFormData, fetchAllMarkets, handleChange}}>
+        <MarketTrackerContext.Provider value={{ connectWallet, currentAccount, currentBalance, formData, listOfMarkets, currentMarket, winning, isStaff, setIsStaff, createNewMarket, setCurrentMarket, tradeTokens, setWinningBets, collectClaims, setFormData, fetchAllMarkets, handleChange}}>
             {children}
         </MarketTrackerContext.Provider>
     )

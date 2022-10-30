@@ -6,11 +6,18 @@ pragma solidity >=0.8.0 <0.9.0; //use 0.8.0
 
 //keeps track of markets and transactions
 contract MarketTracker {
+    address public staffAddress;
+
     Market[] public marketContracts;
     uint256 public marketContractsCount;
 
     Transactions[] public transactionsContracts;
     uint256 public transactionsContractsCount;
+
+    constructor(){ 
+        staffAddress = address(msg.sender); 
+
+    }
 
     //simple test functions to test if contract file is working=========
 
@@ -21,6 +28,10 @@ contract MarketTracker {
     }
 
     //================================
+
+    function getStaffAddress() public view returns (address) {
+        return staffAddress;
+    }
 
     function addNewMarket(
         string memory _marketName,
@@ -35,6 +46,9 @@ contract MarketTracker {
             _side,
             _resultDate
         );
+        address payable marketAddress = payable(address(newMarket));
+        (bool success, bytes memory _data) = marketAddress.call{value: 1 ether}(abi.encodeWithSignature('receiveEther()')); 
+        require(success, "Call failed");
         marketContracts.push(newMarket);
         marketContractsCount++;
 
@@ -89,6 +103,12 @@ contract MarketTracker {
         returns (string memory)
     {
         return marketContracts[marketIndex].getMarketName();
+    }
+
+    function checkPermission() public view returns (bool){
+        address ownerAddress = staffAddress;
+        require(msg.sender == ownerAddress, "You do not have oracle permission");
+        return true;
     }
 }
 
@@ -158,7 +178,17 @@ contract Market {
         oracleDecided = false;
     }
 
-    function receiveether() external payable {}
+    function getWebsiteStaff() public view returns (address){
+        return MarketTracker(factoryAddress).getStaffAddress();
+    }
+
+    function checkPermission() public view returns (bool){
+        address ownerAddress = getWebsiteStaff();
+        require(msg.sender == ownerAddress, "You do not have permission");
+        return true;
+    }
+
+    function receiveEther() external payable {}
 
     function buyYToken(uint256 amountOfCoin) public payable {
         require(oracleDecided == false, "Oracle has decided already");
@@ -341,11 +371,4 @@ contract Market {
     function getWinningsPerToken() public view returns (uint256) {
         return winningsPerToken;
     }
-
-    // function getOwnerBetAmount() public view returns (uint[2] memory){
-    //     uint[2] memory sideAmt;
-    //     sideAmt[0] = betsPerGambler[msg.sender][0];
-    //     sideAmt[1] = betsPerGambler[msg.sender][1];
-    //     return sideAmt;
-    // }
 }
