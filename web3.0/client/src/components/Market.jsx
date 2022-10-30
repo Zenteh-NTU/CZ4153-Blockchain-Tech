@@ -27,15 +27,23 @@ const Market = ({setScreenState}) => {
                     <div key={index} className=" mt-6 w-full hover:bg-black cursor-pointer bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg" onClick={() => viewMarketDetail(item)}>
                     <div className="px-6 py-4">
                         <div className="font-bold text-xl mb-2 text-white">{item.marketName}</div>
-                        <div className="w-full h-10 items-center pb-12" >
+                        
+                        <div className="flex justify-start text-white">
+                        <div className="text-white">Owned (</div>
+                            <div className='pr-2 text-blue-400'>{item.UserYToken}</div>
+                            <div className='text-red-500'>{item.UserNToken}</div>
+                            <div>)</div>
+                            </div>
+                        <div className="flex justify-between w-full h-10 items-center " >
                             <div className=" text-blue-400 text-base">
-                            {item.sides[1]} - {percentageCal(item.Y_Tokens,item.N_Tokens)}%
+                            {item.sides[1]} - {parseFloat(percentageCal(item.Y_Tokens,item.N_Tokens)).toFixed(2)}%
                             </div>
                             <div className=" text-red-500 text-base">
-                            {item.sides[0]} - {percentageCal(item.N_Tokens,item.Y_Tokens)}%
+                            {item.sides[0]} - {parseFloat(percentageCal(item.N_Tokens,item.Y_Tokens)).toFixed(2)}%
                             </div>
                         </div>
                     </div>
+                    
                     <div className=" w-full bg-red-500 h-2.5">
                         <div className="bg-blue-400 h-2.5" style={{ width: percentageCal(item.Y_Tokens,item.N_Tokens)+"%" }}></div>
                     </div>

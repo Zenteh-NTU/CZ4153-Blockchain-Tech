@@ -89,7 +89,7 @@ export const MarketTrackerProvider = ({ children }) => {
       console.log(marketTrackerContract);
       //testing if contract works
       const transactionHash = await marketTrackerContract.testFunction();
-      
+
       const createMarketTransactionHash =
         await marketTrackerContract.addNewMarket(
           marketTitle,
@@ -97,14 +97,13 @@ export const MarketTrackerProvider = ({ children }) => {
           Math.floor(new Date(resultDay).getTime() / 1000),
           { value: ethers.utils.parseEther("1") }
         );
-        const receipt = await createMarketTransactionHash.wait();
-        if(receipt){
-            alert("Transaction successful!");
-            window.location.reload();
-        }else{
-            alert("Transaction failed");
-        }
-
+      const receipt = await createMarketTransactionHash.wait();
+      if (receipt) {
+        alert("Transaction successful!");
+        window.location.reload();
+      } else {
+        alert("Transaction failed");
+      }
     } catch (error) {
       console.log(error);
       alert("Transaction failed");
@@ -193,7 +192,7 @@ export const MarketTrackerProvider = ({ children }) => {
       const receipt = await tokenHash.wait();
       if (receipt) {
         alert("Transaction Complete!");
-      }else{
+      } else {
         alert("Transaction failed!");
       }
       //   console.log("hash finished");
@@ -218,39 +217,99 @@ export const MarketTrackerProvider = ({ children }) => {
   };
 
   const collectClaims = async (contract) => {
-    const market = getEthereumContract(contract, marketContractABI);
-    const tokenHash = await market.withdrawGains();
-    const receipt = await tokenHash.wait();
-    console.log("receipt:", receipt);
-    const winner = await market.getWinner();
-    const winningsPerTokenWei = await market.getWinningsPerToken();
-    console.log(winningsPerTokenWei);
-    const winningsPerToken = ethers.utils.formatEther(winningsPerTokenWei);
-    if (receipt) alert("Transaction Complete!");
-    console.log(winner);
-    if (winner == 1) {
-      const balance = (
-        parseFloat(currentBalance) +
-        currentMarket.UserYToken * parseFloat(winningsPerToken)
-      ).toString();
-      setCurrentBalance(balance);
-      currentMarket.contractBalance = (
-        parseFloat(currentMarket.contractBalance) -
-        currentMarket.UserYToken * parseFloat(winningsPerToken)
-      ).toString();
-    } else if (winner == 0) {
-      const balance = (
-        parseFloat(currentBalance) +
-        currentMarket.UserNToken * parseFloat(winningsPerToken)
-      ).toString();
-      setCurrentBalance(balance);
-      currentMarket.contractBalance = (
-        parseFloat(currentMarket.contractBalance) -
-        currentMarket.UserNToken * parseFloat(winningsPerToken)
-      ).toString();
+    try {
+      const marketContract = getEthereumContract(contract, marketContractABI);
+      const getUserNToken = await marketContract.getUserNTokens();
+      const getUserYToken = await marketContract.getUserYTokens();
+      const getYToken = await marketContract.getYTokens();
+      const getNToken = await marketContract.getNTokens();
+      const getWinningToken = await marketContract.getWinner();
+      let winningToken = "null";
+      let winningTokenAmt = 99;
+      let token_to_calculate;
+      if (getWinningToken == 1) {
+        winningToken = "Y-Token";
+        token_to_calculate = getUserYToken;
+        winningTokenAmt = getYToken;
+      } else {
+        winningToken = "N-Token";
+        token_to_calculate = getUserNToken;
+        winningTokenAmt = getNToken;
+      }
+
+      const contractBalance = await marketContract.getContractBalance();
+      if (
+        confirm(
+          "You have a total of: \n" +
+            getUserYToken +
+            " Y-Tokens\n" +
+            getUserNToken +
+            " N-Tokens\n" +
+            "The prize pool is : " +
+            ethers.utils.formatEther(contractBalance) +
+            " ETH" +
+            "\nThe winning token is the " +
+            winningToken +
+            "\nNumber of tokens currently in circulation: " +
+            winningTokenAmt +
+            "\nReward per Y-Token: " +
+            ethers.utils.formatEther(contractBalance) / winningTokenAmt +
+            " ETH" +
+            "\nYou will lose both tokens and claim a total amount of : " +
+            (ethers.utils.formatEther(contractBalance) / winningTokenAmt) *
+              token_to_calculate +
+            " ETH"
+        ) == true
+      ) {
+        const tokenHash = await marketContract.withdrawGains();
+        const receipt = await tokenHash.wait();
+        if(receipt){
+            alert("Reward accepted");
+            window.location.reload();
+        }else{
+            alert("Reward claiming failed");
+        }
+        
+      } else {
+        alert("Reward claiming failed.");
+      }
+    } catch (error) {
+      alert("Reward claiming failed");
+      console.log(error);
+      throw new Error("No ethereum object.");
     }
-    currentMarket.UserYToken = 0;
-    currentMarket.UserNToken = 0;
+    // const tokenHash = await market.withdrawGains();
+    // const receipt = await tokenHash.wait();
+    // console.log("receipt:", receipt);
+    // const winner = await market.getWinner();
+    // const winningsPerTokenWei = await market.getWinningsPerToken();
+    // console.log(winningsPerTokenWei);
+    // const winningsPerToken = ethers.utils.formatEther(winningsPerTokenWei);
+    // if (receipt) alert("Transaction Complete!");
+    // console.log(winner);
+    // if (winner == 1) {
+    //   const balance = (
+    //     parseFloat(currentBalance) +
+    //     currentMarket.UserYToken * parseFloat(winningsPerToken)
+    //   ).toString();
+    //   setCurrentBalance(balance);
+    //   currentMarket.contractBalance = (
+    //     parseFloat(currentMarket.contractBalance) -
+    //     currentMarket.UserYToken * parseFloat(winningsPerToken)
+    //   ).toString();
+    // } else if (winner == 0) {
+    //   const balance = (
+    //     parseFloat(currentBalance) +
+    //     currentMarket.UserNToken * parseFloat(winningsPerToken)
+    //   ).toString();
+    //   setCurrentBalance(balance);
+    //   currentMarket.contractBalance = (
+    //     parseFloat(currentMarket.contractBalance) -
+    //     currentMarket.UserNToken * parseFloat(winningsPerToken)
+    //   ).toString();
+    // }
+    // currentMarket.UserYToken = 0;
+    // currentMarket.UserNToken = 0;
   };
 
   const setMarketVariables = async (marketContractHash) => {
@@ -292,6 +351,7 @@ export const MarketTrackerProvider = ({ children }) => {
       winner: winner,
     };
     setCurrentMarket(marketObj);
+    fetchAllMarkets();
     return marketObj;
   };
   const fetchAllMarkets = async () => {

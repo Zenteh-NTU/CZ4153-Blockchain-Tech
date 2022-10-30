@@ -24,25 +24,33 @@ const MarketDetail = () => {
   const [value2, setValue2] = useState("");
   const [value3, setValue3] = useState("");
   const [value4, setValue4] = useState("");
+  const [totalCostYBValue, setTotalCostYBValue] = useState("0");
+  const [totalCostYSValue, setTotalCostYSValue] = useState("0");
+  const [totalCostNBValue, setTotalCostNBValue] = useState("0");
+  const [totalCostNSValue, setTotalCostNSValue] = useState("0");
   console.log(winning);
   const handleChange1 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue1(result);
+    setTotalCostYBValue(parseFloat((parseFloat(result) * currentMarket.Y_Price)).toFixed(3));
   };
 
   const handleChange2 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue2(result);
+    setTotalCostYSValue(parseFloat((parseFloat(result) * currentMarket.Y_Price)).toFixed(3));
   };
 
   const handleChange3 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue3(result);
+    setTotalCostNBValue(parseFloat((parseFloat(result) * currentMarket.N_Price)).toFixed(3));
   };
 
   const handleChange4 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue4(result);
+    setTotalCostNSValue(parseFloat((parseFloat(result) * currentMarket.Y_Price)).toFixed(3));
   };
 
   const outcomeDate = (dateObject) => {
@@ -86,7 +94,8 @@ const MarketDetail = () => {
     await setWinningBets(0, 1, currentMarket.contractHash);
   };
 
-  const withdrawGains = async () => {
+  const collectWinnings = async () => {
+    console.log("Collect winnings");
     collectClaims(currentMarket.contractHash);
   };
 
@@ -166,8 +175,12 @@ const MarketDetail = () => {
             : {parseFloat(currentMarket.N_Price).toFixed(3).toString()} ETH each
           </p>
           <p className=" font-mono pt-3 text-white">
+            Total Tokens circulated:{" "}
+            {(currentMarket.Y_Tokens + currentMarket.N_Tokens).toString()}
+          </p>
+          <p className=" font-mono pt-3 text-white">
             Prize Pool:{" "}
-            {parseFloat(currentMarket.contractBalance).toFixed(3).toString()}{" "}
+            {parseFloat(currentMarket.contractBalance).toFixed(3).toString()}
             ETH
           </p>
           <hr className="mt-4"></hr>
@@ -212,7 +225,7 @@ const MarketDetail = () => {
           )}
         </div>
         {!isStaff && (
-          <div className=" mt-6 w-full  bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg flex flex-col items-center">
+          <div className=" mt-6 mb-24 w-full  bg-zinc-900 max-h-full rounded overflow-hidden shadow-lg flex flex-col items-center">
             <br />
             <h1 className="p-5 text-white text-2xl">Buy and Sell</h1>
             <div className="flex flex-col lg:flex-row">
@@ -247,19 +260,32 @@ const MarketDetail = () => {
                     ETH each
                   </p>
                   <p className=" text-white">Quanity to buy: {value1}</p>
-                  <button
-                    className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
-                    onClick={() =>
-                      handleSubmit(
-                        "buyY",
-                        currentMarket.contractHash,
-                        currentMarket.Y_Price,
-                        value1
-                      )
-                    }
-                  >
-                    BUY
-                  </button>
+                  <p className=" text-white">
+                    Total Cost: {parseFloat(totalCostYBValue).toFixed(3).toString()} ETH
+                  </p>
+                  {!currentMarket.oracleDecision && (
+                    <button
+                      className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
+                      onClick={() =>
+                        handleSubmit(
+                          "buyY",
+                          currentMarket.contractHash,
+                          currentMarket.Y_Price,
+                          value1
+                        )
+                      }
+                    >
+                      BUY
+                    </button>
+                  )}
+                  {currentMarket.oracleDecision && (
+                    <button
+                      className="bg-blue-500 w-36 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
+                      disabled
+                    >
+                      MARKET OVER
+                    </button>
+                  )}
                 </div>
 
                 <hr></hr>
@@ -289,19 +315,32 @@ const MarketDetail = () => {
                   <p className=" font-mono text-white">
                     Quanity to sell: {value2}
                   </p>
-                  <button
-                    className="bg-red-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-700 shadow-lg"
-                    onClick={() =>
-                      handleSubmit(
-                        "sellY",
-                        currentMarket.contractHash,
-                        currentMarket.Y_Price,
-                        value2
-                      )
-                    }
-                  >
-                    SELL
-                  </button>
+                  <p className=" text-white">
+                    Total Cost: {parseFloat(totalCostYSValue).toFixed(3).toString()} ETH
+                  </p>
+                  {!currentMarket.oracleDecision && (
+                    <button
+                      className="bg-red-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-700 shadow-lg"
+                      onClick={() =>
+                        handleSubmit(
+                          "sellY",
+                          currentMarket.contractHash,
+                          currentMarket.Y_Price,
+                          value2
+                        )
+                      }
+                    >
+                      SELL
+                    </button>
+                  )}
+                  {currentMarket.oracleDecision && (
+                    <button
+                      className="bg-red-500 w-36 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-700 shadow-lg"
+                      disabled
+                    >
+                      MARKET OVER
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="m-5 p-5 bg-red-900 max-h-full rounded overflow-hidden shadow-lg col-start-13">
@@ -338,20 +377,32 @@ const MarketDetail = () => {
                   <p className=" font-mono text-white">
                     Quantity to buy: {value3}
                   </p>
-
-                  <button
-                    className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
-                    onClick={() =>
-                      handleSubmit(
-                        "buyN",
-                        currentMarket.contractHash,
-                        currentMarket.N_Price,
-                        value3
-                      )
-                    }
-                  >
-                    BUY
-                  </button>
+                  <p className=" text-white">
+                    Total Cost: {parseFloat(totalCostNBValue).toFixed(3).toString()} ETH
+                  </p>
+                  {!currentMarket.oracleDecision && (
+                    <button
+                      className="bg-blue-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
+                      onClick={() =>
+                        handleSubmit(
+                          "buyN",
+                          currentMarket.contractHash,
+                          currentMarket.N_Price,
+                          value3
+                        )
+                      }
+                    >
+                      BUY
+                    </button>
+                  )}
+                  {currentMarket.oracleDecision && (
+                    <button
+                      className="bg-blue-500 w-36 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
+                      disabled
+                    >
+                      MARKET OVER
+                    </button>
+                  )}
                 </div>
                 <hr></hr>
                 <h1 className="text-xl pt-3 text-white bg sm:text-xl">
@@ -380,35 +431,54 @@ const MarketDetail = () => {
                   <p className=" font-mono text-white">
                     Quanity to sell: {value4}
                   </p>
-
-                  <button
-                    className="bg-red-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-700 shadow-lg"
-                    onClick={() =>
-                      handleSubmit(
-                        "sellN",
-                        currentMarket.contractHash,
-                        currentMarket.N_Price,
-                        value4
-                      )
-                    }
-                  >
-                    SELL
-                  </button>
+                  <p className=" text-white">
+                    Total Cost: {parseFloat(totalCostNSValue).toFixed(3).toString()} ETH
+                  </p>
+                  {!currentMarket.oracleDecision && (
+                    <button
+                      className="bg-red-500 w-24 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-700 shadow-lg"
+                      onClick={() =>
+                        handleSubmit(
+                          "sellN",
+                          currentMarket.contractHash,
+                          currentMarket.N_Price,
+                          value4
+                        )
+                      }
+                    >
+                      SELL
+                    </button>
+                  )}
+                  {currentMarket.oracleDecision && (
+                    <button
+                      className="bg-red-500 w-36 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-pink-700 shadow-lg"
+                      disabled
+                    >
+                      MARKET OVER
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-            <div className="flex flex-col mt-12 mb-24 items-center text-center w-96">
-              <h2 className="text-white">
-                Claim your gains, if any, after the winner has been anounced
-              </h2>
-              <button
-                className="bg-blue-500 w-24 mt-12 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
-                type="submit"
-                onClick={() => withdrawGains()}
-              >
-                Claim
-              </button>
-            </div>
+            {currentMarket.oracleDecision && (
+              <div className="flex flex-col mt-12 mb-24 items-center text-center w-96">
+                <div className="pt-4">
+                  <span className="inline-block bg-yellow-400 rounded-full px-3 py-1 text-sm font-semibold text-black mb-2">
+                    MARKET RESOLVED
+                  </span>
+                </div>
+                <h2 className="text-white">
+                  Claim your gains, if any, after the winner has been anounced
+                </h2>
+                <button
+                  className="bg-blue-500 w-24 mt-12 text-white my-8 pt-2 pb-2 pl-3 pr-3 font-mono rounded shadow-sky-700 shadow-lg"
+                  type="submit"
+                  onClick={() => collectWinnings()}
+                >
+                  Claim
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

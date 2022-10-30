@@ -343,17 +343,15 @@ contract Market {
     function withdrawGains() public payable {
         uint256 gamblerBet = tokensPerGambler[msg.sender][winner];
         require(gamblerBet > 0, "You do not have any winning bet");
-        require(oracleDecided == true, "Bet have not finished yet");
+        require(oracleDecided == true, "Oracle has not decided on outcome");
         if (winner == 0) {
-            uint256 gain = tokensPerGambler[msg.sender][0] * winningsPerToken;
-            payable(msg.sender).transfer(gain);
-            currentNPrice = 1e18;
-            currentYPrice = 0;
+            uint256 reward = address(this).balance / N_Tokens * tokensPerGambler[msg.sender][0];
+            N_Tokens -= tokensPerGambler[msg.sender][0];
+            payable(msg.sender).transfer(reward);
         } else if (winner == 1) {
-            uint256 gain = tokensPerGambler[msg.sender][1] * winningsPerToken;
-            payable(msg.sender).transfer(gain);
-            currentYPrice = 1e18;
-            currentNPrice = 0;
+            uint256 reward = address(this).balance / Y_Tokens * tokensPerGambler[msg.sender][1];
+            Y_Tokens -= tokensPerGambler[msg.sender][1];
+            payable(msg.sender).transfer(reward);
         }
         tokensPerGambler[msg.sender][0] = 0;
         tokensPerGambler[msg.sender][1] = 0;
