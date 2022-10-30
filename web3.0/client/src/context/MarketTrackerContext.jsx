@@ -40,6 +40,7 @@ export const MarketTrackerProvider = ({ children }) => {
   const [isStaff, setIsStaff] = useState(false);
   const [currentBalance, setCurrentBalance] = useState("");
   const [listOfMarkets, setListOfMarkets] = useState([]);
+  const [listOfTransactions, setListOfTransactions] = useState([]);
   const [currentMarket, setCurrentMarket] = useState({});
   const [formData, setFormData] = useState({
     marketTitle: "",
@@ -218,6 +219,7 @@ export const MarketTrackerProvider = ({ children }) => {
 
   const collectClaims = async (contract) => {
     try {
+      console.log("Collect winnings called");
       const marketContract = getEthereumContract(contract, marketContractABI);
       const getUserNToken = await marketContract.getUserNTokens();
       const getUserYToken = await marketContract.getUserYTokens();
@@ -252,7 +254,7 @@ export const MarketTrackerProvider = ({ children }) => {
             winningToken +
             "\nNumber of tokens currently in circulation: " +
             winningTokenAmt +
-            "\nReward per Y-Token: " +
+            "\nReward per Token: " +
             ethers.utils.formatEther(contractBalance) / winningTokenAmt +
             " ETH" +
             "\nYou will lose both tokens and claim a total amount of : " +
@@ -263,18 +265,17 @@ export const MarketTrackerProvider = ({ children }) => {
       ) {
         const tokenHash = await marketContract.withdrawGains();
         const receipt = await tokenHash.wait();
-        if(receipt){
-            alert("Reward accepted");
-            window.location.reload();
-        }else{
-            alert("Reward claiming failed");
+        if (receipt) {
+          alert("Reward accepted");
+          window.location.reload();
+        } else {
+          alert("Reward claiming failed/You may have already collected your winnings");
         }
-        
       } else {
         alert("Reward claiming failed.");
       }
     } catch (error) {
-      alert("Reward claiming failed");
+      alert("Reward claiming failed/You may have already collected your winnings");
       console.log(error);
       throw new Error("No ethereum object.");
     }
@@ -352,6 +353,7 @@ export const MarketTrackerProvider = ({ children }) => {
     };
     setCurrentMarket(marketObj);
     fetchAllMarkets();
+    fetchAllTransactions();
     return marketObj;
   };
   const fetchAllMarkets = async () => {
@@ -421,6 +423,89 @@ export const MarketTrackerProvider = ({ children }) => {
     }
   };
 
+  const fetchAllTransactions = async () => {
+    try {
+      const transactionsList = [];
+      if (!ethereum) return alert("Please install metamask!");
+      //get contract
+      console.log("fetching transactions");
+      //get contract
+      const marketTrackerContract = getEthereumContract(
+        contractAddress,
+        marketTrackerContractABI
+      );
+      //testing if contract works
+      console.log(marketTrackerContract);
+      const transactionHashArray =
+        await marketTrackerContract.getTransactionsArray();
+     const signer = provider.getSigner();
+      console.log("transaction hashes:",transactionHashArray);
+      for (var i = 0; i < transactionHashArray.length; i++) {
+        const contractHash = transactionHashArray[i];
+        const transactionsContract = getEthereumContract(
+          contractHash,
+          transactionsABI
+        );
+        const transactionType = await transactionsContract.getTransactionType();
+        const ethereumValue = await transactionsContract.getEthereumValue();
+        const ownerHash = await transactionsContract.getOwnerHash();
+        const recipientHash = await transactionsContract.getRecipientHash();
+        const tokenType = await transactionsContract.getTokenType();
+        const tokenCount = await transactionsContract.getTokenCount();
+        const currentAddress = await signer.getAddress();
+        if(ownerHash == currentAddress){
+        transactionsList.push({
+          contractHash: contractHash,
+          ownerHash: ownerHash,
+          recipientHash: recipientHash,
+          transactionType: transactionType,
+          ethereumValue: ethers.utils.formatEther(ethereumValue),
+          tokenType: tokenType,
+          tokenCount: parseInt(tokenCount),
+        });
+    }
+        
+      }
+      setListOfTransactions(transactionsList.reverse());
+      console.log("Transactions list", transactionsList);
+
+      //     const contractHash = marketHashArray[i];
+      // const marketContract = getEthereumContract(
+      //   contractHash,
+      //   marketContractABI
+      // );
+      // const ownerHash = await marketContract.getOwnerAddress();
+      // const marketName = await marketContract.getMarketName();
+
+      // const Y_Tokens = await marketContract.getYTokens();
+      // const N_Tokens = await marketContract.getNTokens();
+      // const getUserNToken = await marketContract.getUserNTokens();
+      // const getUserYToken = await marketContract.getUserYTokens();
+      // const Y_Price = await marketContract.getYPrice();
+      // const N_Price = await marketContract.getNPrice();
+      // const contractBalance = await marketContract.getContractBalance();
+      // const sides = await marketContract.getSide();
+      // const resultUNIXDate = await marketContract.getResultDate();
+      // const resultDate = new Date(resultUNIXDate.toString() * 1000);
+      // const winner = await marketContract.getWinner();
+      // const oracleDecision = await marketContract.getOracleDecision();
+      // console.log(sides[winner]);
+
+      // marketList.push({
+
+      // });
+      //      }
+      //   console.log(marketList);
+      //   setListOfMarkets(marketList);
+      //should return hello world
+      //const createMarketTransactionHash = await marketTrackerContract.addNewMarket(marketTitle, [YTokenName, NTokenName], (Math.floor(new Date(resultDay).getTime() / 1000)), { value: ethers.utils.parseEther("1") });
+      //console.log(createMarketTransactionHash); //convert to unix time
+    } catch (error) {
+      console.log(error);
+      throw new Error("No ethereum object.");
+    }
+  };
+
   const checkIfStaff = async () => {
     try {
       if (!ethereum) return alert("Please install metamask!");
@@ -442,7 +527,7 @@ export const MarketTrackerProvider = ({ children }) => {
       }
       return false;
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       return false;
     }
   };
@@ -465,6 +550,7 @@ export const MarketTrackerProvider = ({ children }) => {
     checkIfWalletIsConnected();
     fetchAllMarkets();
     checkIfStaff();
+    fetchAllTransactions();
   }, []);
 
   return (
@@ -478,6 +564,8 @@ export const MarketTrackerProvider = ({ children }) => {
         currentMarket,
         winning,
         isStaff,
+        listOfTransactions,
+        setListOfTransactions,
         setIsStaff,
         createNewMarket,
         setCurrentMarket,

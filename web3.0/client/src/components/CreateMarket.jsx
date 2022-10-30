@@ -89,7 +89,6 @@ const CreateMarket = ({setScreenState}) => {
                 <h1 className="text-4xl underline text-white pt-32 sm:text-2xl">Additional Info</h1>
                 <ul className=" font-mono pt-3 list-disc text-white">
                     <li>A fee of 1 Ether will be paid upon the creation of this market.</li>
-                    <li>The market will close 7 days before event result.</li>
                     <li>This market must be based on a real world event.</li>
                     <li>The outcome of this market will be verified by an oracle. The oracle will verify the results based on factual information.</li>
                     <li>If the decided outcome by the oracle is determined to be false, please send an email to us at toTheMoon@gmail.com.</li>

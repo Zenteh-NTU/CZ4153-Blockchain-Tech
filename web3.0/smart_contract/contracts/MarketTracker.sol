@@ -54,7 +54,7 @@ contract MarketTracker {
         marketContractsCount++;
 
         Transactions newTransaction = new Transactions(
-            "Market Creation",
+            "Contract Creation",
             msg.value,
             msg.sender,
             address(this),
@@ -119,7 +119,7 @@ contract MarketTracker {
 //transactions
 contract Transactions {
     string public transaction_type; //'contract creation' 'buy' 'sell' 'reward claim'
-    uint256 ethereum_value; //in ethers
+    uint256 ethereum_value; //in wei
     address owner_hash; //owner hash account
     address recipient_hash; //recipient hash account
     string public token_type; //token type if transaction_type is 'buy' or 'sell' | 'Y-Token' or "N-Token'
@@ -140,6 +140,25 @@ contract Transactions {
         token_type = _token_type; //token type if transaction_type is 'buy' or 'sell' | 'Y-Token' or "N-Token'
         token_count = _token_count; // Token bought, leave as 0 if no tokens are bought
     }
+    function getTransactionType() public view returns (string memory) {
+        return transaction_type;
+    }
+    function getEthereumValue() public view returns (uint) {
+        return ethereum_value;
+    }
+    function getOwnerHash() public view returns (address) {
+        return owner_hash;
+    }
+    function getRecipientHash() public view returns (address) {
+        return recipient_hash;
+    }
+    function getTokenType() public view returns (string memory) {
+        return token_type;
+    }
+    function getTokenCount() public view returns (uint) {
+        return token_count;
+    }
+
 }
 
 //markets
@@ -210,7 +229,7 @@ contract Market {
             amount,
             msg.sender,
             address(this),
-            "",
+            "Y-Token",
             amountOfCoin
         );
         Y_Tokens += amountOfCoin;
@@ -233,7 +252,7 @@ contract Market {
             amount,
             msg.sender,
             address(this),
-            "",
+            "N-Token",
             amountOfCoin
         );
         N_Tokens += amountOfCoin;
@@ -254,9 +273,9 @@ contract Market {
         Transactions newTransaction = new Transactions(
             "Sell",
             amount,
-            address(this),
             msg.sender,
-            "",
+            address(this),
+            "Y-Token",
             amountOfCoin
         );
         payable(msg.sender).transfer(amount);
@@ -278,9 +297,9 @@ contract Market {
         Transactions newTransaction = new Transactions(
             "Sell",
             amount,
-            address(this),
             msg.sender,
-            "",
+            address(this),
+            "N-Token",
             amountOfCoin
         );
         payable(msg.sender).transfer(amount);
@@ -342,17 +361,27 @@ contract Market {
 
     function withdrawGains() public payable {
         uint256 gamblerBet = tokensPerGambler[msg.sender][winner];
+        uint256 reward = 0;
         require(gamblerBet > 0, "You do not have any winning bet");
         require(oracleDecided == true, "Oracle has not decided on outcome");
         if (winner == 0) {
-            uint256 reward = address(this).balance / N_Tokens * tokensPerGambler[msg.sender][0];
+            reward = address(this).balance / N_Tokens * tokensPerGambler[msg.sender][0];
             N_Tokens -= tokensPerGambler[msg.sender][0];
             payable(msg.sender).transfer(reward);
         } else if (winner == 1) {
-            uint256 reward = address(this).balance / Y_Tokens * tokensPerGambler[msg.sender][1];
+            reward = address(this).balance / Y_Tokens * tokensPerGambler[msg.sender][1];
             Y_Tokens -= tokensPerGambler[msg.sender][1];
             payable(msg.sender).transfer(reward);
         }
+        Transactions newTransaction = new Transactions(
+            "Reward Claim",
+            reward,
+            msg.sender,
+            address(this),
+            "",
+            0
+        );
+        MarketTracker(factoryAddress).pushToTransactionsArray(newTransaction);
         tokensPerGambler[msg.sender][0] = 0;
         tokensPerGambler[msg.sender][1] = 0;
     }

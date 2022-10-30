@@ -50,7 +50,7 @@ const MarketDetail = () => {
   const handleChange4 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue4(result);
-    setTotalCostNSValue(parseFloat((parseFloat(result) * currentMarket.Y_Price)).toFixed(3));
+    setTotalCostNSValue(parseFloat((parseFloat(result) * currentMarket.N_Price)).toFixed(3));
   };
 
   const outcomeDate = (dateObject) => {
