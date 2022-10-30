@@ -14,9 +14,8 @@ contract MarketTracker {
     Transactions[] public transactionsContracts;
     uint256 public transactionsContractsCount;
 
-    constructor(){ 
-        staffAddress = address(msg.sender); 
-
+    constructor() {
+        staffAddress = address(msg.sender);
     }
 
     //simple test functions to test if contract file is working=========
@@ -47,7 +46,9 @@ contract MarketTracker {
             _resultDate
         );
         address payable marketAddress = payable(address(newMarket));
-        (bool success, bytes memory _data) = marketAddress.call{value: 1 ether}(abi.encodeWithSignature('receiveEther()')); 
+        (bool success, bytes memory _data) = marketAddress.call{value: 1 ether}(
+            abi.encodeWithSignature("receiveEther()")
+        );
         require(success, "Call failed");
         marketContracts.push(newMarket);
         marketContractsCount++;
@@ -105,9 +106,12 @@ contract MarketTracker {
         return marketContracts[marketIndex].getMarketName();
     }
 
-    function checkPermission() public view returns (bool){
+    function checkPermission() public view returns (bool) {
         address ownerAddress = staffAddress;
-        require(msg.sender == ownerAddress, "You do not have oracle permission");
+        require(
+            msg.sender == ownerAddress,
+            "You do not have oracle permission"
+        );
         return true;
     }
 }
@@ -178,17 +182,21 @@ contract Market {
         oracleDecided = false;
     }
 
-    function getWebsiteStaff() public view returns (address){
+    function getWebsiteStaff() public view returns (address) {
         return MarketTracker(factoryAddress).getStaffAddress();
     }
 
-    function checkPermission() public view returns (bool){
+    function checkPermission() public view returns (bool) {
         address ownerAddress = getWebsiteStaff();
         require(msg.sender == ownerAddress, "You do not have permission");
         return true;
     }
 
+    function getOracleDecision() public view returns (bool) {
+        return oracleDecided;
+    }
     function receiveEther() external payable {}
+
 
     function buyYToken(uint256 amountOfCoin) public payable {
         require(oracleDecided == false, "Oracle has decided already");
@@ -352,23 +360,23 @@ contract Market {
     }
 
     function setWinningBet(uint8 _winner, uint8 _loser) public {
-        require(oracleDecided == false, "You have already chosen");
-        require(msg.sender == owner, "You do not have access to this function");
+        address ownerAddress = getWebsiteStaff();
+        require(msg.sender == ownerAddress && oracleDecided == false , "You do not have permission/You have already chosen");
         winner = _winner;
         loser = _loser;
         oracleDecided = true;
-        if (winner == 1) {
-            winningsPerToken = (address(this).balance / Y_Tokens);
-        } else if (winner == 0) {
-            winningsPerToken = (address(this).balance / N_Tokens);
-        }
+        // if (winner == 1) {
+        //     winningsPerToken = (address(this).balance / Y_Tokens);
+        // } else if (winner == 0) {
+        //     winningsPerToken = (address(this).balance / N_Tokens);
+        // }
     }
 
     function getWinner() public view returns (uint8) {
         return winner;
     }
 
-    function getWinningsPerToken() public view returns (uint256) {
-        return winningsPerToken;
-    }
+    // function getWinningsPerToken() public view returns (uint256) {
+    //     return winningsPerToken;
+    // }
 }

@@ -45,6 +45,12 @@ const Market = ({setScreenState}) => {
                     <div className="px-6 pb-2">
                         <span className="inline-block bg-slate-700 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">Owner: {item.ownerHash}</span>
                     </div>
+                    {
+                        item.oracleDecision &&
+                    <div className="px-6 pb-2">
+                        <span className="inline-block bg-yellow-400 rounded-full px-3 py-1 text-sm font-semibold text-black mr-2 mb-2">MARKET RESOLVED</span>
+                    </div>
+}
                 </div>
 
                 ))}

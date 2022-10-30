@@ -5,4 +5,4 @@ import TransactionsABI from './Transactions.json';
 export const marketTrackerContractABI = MarketTrackerABI.abi;
 export const marketContractABI = MarketABI.abi;
 export const transactionsABI = TransactionsABI.abi;
-export const contractAddress = '0x668a95E8516D15231dAC4Cf7fABC12af2e2f8A3A';
+export const contractAddress = '0x561D785cf22e7E0A6d553DE324F9F6A3dC8bBd49';
