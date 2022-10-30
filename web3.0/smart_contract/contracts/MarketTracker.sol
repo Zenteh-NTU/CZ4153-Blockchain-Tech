@@ -158,6 +158,8 @@ contract Market {
         oracleDecided = false;
     }
 
+    function receiveether() external payable {}
+
     function buyYToken(uint256 amountOfCoin) public payable {
         uint256 amount = amountOfCoin * currentYPrice;
         require(
