@@ -159,6 +159,7 @@ contract Market {
     }
 
     function buyYToken(uint256 amountOfCoin) public payable {
+        require(oracleDecided == false, "Oracle has decided already");
         uint256 amount = amountOfCoin * currentYPrice;
         require(
             msg.value == amount,
@@ -181,7 +182,12 @@ contract Market {
     }
 
     function buyNToken(uint256 amountOfCoin) public payable {
+        require(oracleDecided == false, "Oracle has decided already");
         uint256 amount = amountOfCoin * currentNPrice;
+        require(
+            msg.value == amount,
+            "You need to pass in the correct amount of ether"
+        );
         Transactions newTransaction = new Transactions(
             "Buy",
             amount,
@@ -199,6 +205,7 @@ contract Market {
     }
 
     function sellYToken(uint256 amountOfCoin) public payable {
+        require(oracleDecided == false, "Oracle has decided already");
         require(
             tokensPerGambler[msg.sender][1] >= amountOfCoin,
             "Not Enough Tokens!"
@@ -222,6 +229,7 @@ contract Market {
     }
 
     function sellNToken(uint256 amountOfCoin) public payable {
+        require(oracleDecided == false, "Oracle has decided already");
         require(
             tokensPerGambler[msg.sender][0] >= amountOfCoin,
             "Not Enough Tokens!"
@@ -312,6 +320,7 @@ contract Market {
     }
 
     function setWinningBet(uint8 _winner, uint8 _loser) public {
+        require(oracleDecided == false, "You have already chosen");
         require(msg.sender == owner, "You do not have access to this function");
         winner = _winner;
         loser = _loser;
