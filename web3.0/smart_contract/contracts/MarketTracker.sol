@@ -269,7 +269,7 @@ contract Market {
             tokensPerGambler[msg.sender][1] >= amountOfCoin,
             "Not Enough Tokens!"
         );
-        uint256 amount = amountOfCoin * currentYPrice;
+        uint256 amount = amountOfCoin * currentYPrice / 2;
         Transactions newTransaction = new Transactions(
             "Sell",
             amount,
@@ -293,7 +293,7 @@ contract Market {
             tokensPerGambler[msg.sender][0] >= amountOfCoin,
             "Not Enough Tokens!"
         );
-        uint256 amount = amountOfCoin * currentNPrice;
+        uint256 amount = amountOfCoin * currentNPrice / 2;
         Transactions newTransaction = new Transactions(
             "Sell",
             amount,

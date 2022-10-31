@@ -269,13 +269,17 @@ export const MarketTrackerProvider = ({ children }) => {
           alert("Reward accepted");
           window.location.reload();
         } else {
-          alert("Reward claiming failed/You may have already collected your winnings");
+          alert(
+            "Reward claiming failed/You may have already collected your winnings"
+          );
         }
       } else {
         alert("Reward claiming failed.");
       }
     } catch (error) {
-      alert("Reward claiming failed/You may have already collected your winnings");
+      alert(
+        "Reward claiming failed/You may have already collected your winnings"
+      );
       console.log(error);
       throw new Error("No ethereum object.");
     }
@@ -438,8 +442,8 @@ export const MarketTrackerProvider = ({ children }) => {
       console.log(marketTrackerContract);
       const transactionHashArray =
         await marketTrackerContract.getTransactionsArray();
-     const signer = provider.getSigner();
-      console.log("transaction hashes:",transactionHashArray);
+      const signer = provider.getSigner();
+      console.log("transaction hashes:", transactionHashArray);
       for (var i = 0; i < transactionHashArray.length; i++) {
         const contractHash = transactionHashArray[i];
         const transactionsContract = getEthereumContract(
@@ -453,18 +457,17 @@ export const MarketTrackerProvider = ({ children }) => {
         const tokenType = await transactionsContract.getTokenType();
         const tokenCount = await transactionsContract.getTokenCount();
         const currentAddress = await signer.getAddress();
-        if(ownerHash == currentAddress){
-        transactionsList.push({
-          contractHash: contractHash,
-          ownerHash: ownerHash,
-          recipientHash: recipientHash,
-          transactionType: transactionType,
-          ethereumValue: ethers.utils.formatEther(ethereumValue),
-          tokenType: tokenType,
-          tokenCount: parseInt(tokenCount),
-        });
-    }
-        
+        if (ownerHash == currentAddress) {
+          transactionsList.push({
+            contractHash: contractHash,
+            ownerHash: ownerHash,
+            recipientHash: recipientHash,
+            transactionType: transactionType,
+            ethereumValue: ethers.utils.formatEther(ethereumValue),
+            tokenType: tokenType,
+            tokenCount: parseInt(tokenCount),
+          });
+        }
       }
       setListOfTransactions(transactionsList.reverse());
       console.log("Transactions list", transactionsList);

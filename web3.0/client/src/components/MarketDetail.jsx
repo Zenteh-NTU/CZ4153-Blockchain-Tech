@@ -38,7 +38,7 @@ const MarketDetail = () => {
   const handleChange2 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue2(result);
-    setTotalCostYSValue(parseFloat((parseFloat(result) * currentMarket.Y_Price)).toFixed(3));
+    setTotalCostYSValue(parseFloat((parseFloat(result) * currentMarket.Y_Price / 2)).toFixed(3));
   };
 
   const handleChange3 = (event) => {
@@ -50,7 +50,7 @@ const MarketDetail = () => {
   const handleChange4 = (event) => {
     const result = event.target.value.replace(/\D/g, "");
     setValue4(result);
-    setTotalCostNSValue(parseFloat((parseFloat(result) * currentMarket.N_Price)).toFixed(3));
+    setTotalCostNSValue(parseFloat((parseFloat(result) * currentMarket.N_Price / 2)).toFixed(3));
   };
 
   const outcomeDate = (dateObject) => {
@@ -309,7 +309,7 @@ const MarketDetail = () => {
                     <span className=" text-blue-300">
                       (Option:{currentMarket.sides[1]})
                     </span>
-                    : {parseFloat(currentMarket.Y_Price).toFixed(3).toString()}{" "}
+                    : {parseFloat(currentMarket.Y_Price/2).toFixed(3).toString()}{" "}
                     ETH each
                   </p>
                   <p className=" font-mono text-white">
@@ -425,7 +425,7 @@ const MarketDetail = () => {
                     <span className=" text-red-400">
                       (Option:{currentMarket.sides[0]})
                     </span>
-                    : {parseFloat(currentMarket.N_Price).toFixed(3).toString()}{" "}
+                    : {parseFloat(currentMarket.N_Price/2).toFixed(3).toString()}{" "}
                     ETH each
                   </p>
                   <p className=" font-mono text-white">
