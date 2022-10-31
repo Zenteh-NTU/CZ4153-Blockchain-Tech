@@ -1,6 +1,7 @@
 # CZ4153-Blockchain-Tech 
 Project for CZ4153-Blockchain-Tech 
 # Installation and running of the Decentralized Web App
+___
 ## Prerequisites 
 To deploy your program, you need to have the following installed:    
 1. NodeJS - https://nodejs.org/en/
@@ -67,3 +68,15 @@ From your terminal, cd into the `web3.0/client/` directory and run
 ```
 npm run dev
 ```
+___
+
+## Libraries, Softwares and Frameworks used for this project
+
+### Front-End Libraries and Technologies
+1. ReactJS - https://reactjs.org/
+2. Vite - https://vitejs.dev/
+3. TailwindCSS - https://tailwindcss.com/
+### Back-End Libraries and Technologies
+1. Ganache - https://trufflesuite.com/ganache/
+2. Hardhat - https://hardhat.org/
+3. NodeJS - https://nodejs.org/en/
