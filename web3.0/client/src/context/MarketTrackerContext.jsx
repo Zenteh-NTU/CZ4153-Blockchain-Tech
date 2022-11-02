@@ -135,7 +135,7 @@ export const MarketTrackerProvider = ({ children }) => {
       if (howMany <= currentMarket.UserYToken) {
         const balance = (
           parseFloat(currentBalance) +
-          currentMarket.Y_Price * howMany
+          currentMarket.Y_Price * howMany / 2
         ).toString();
         const tokenHash = await market.sellYToken(howMany);
         const receipt = await tokenHash.wait();
@@ -163,7 +163,7 @@ export const MarketTrackerProvider = ({ children }) => {
       if (howMany <= currentMarket.UserNToken) {
         const balance = (
           parseFloat(currentBalance) +
-          currentMarket.N_Price * howMany
+          currentMarket.N_Price * howMany / 2
         ).toString();
         const tokenHash = await market.sellNToken(howMany);
         const receipt = await tokenHash.wait();
